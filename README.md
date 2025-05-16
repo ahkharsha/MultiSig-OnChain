@@ -1,4 +1,4 @@
-# 🛡️ MultiSig Wallet dApp
+# 🛡️ MultiSig Wallet dApp - Built for OnChain Island 🏝️ Selection Task
 
 A fully on-chain, AI-aware, dynamic Multi-Signature Wallet built with ❤️ using Solidity, Next.js, Ethers.js, and Tailwind CSS.
 
@@ -45,7 +45,7 @@ Network: Arbitrum Sepolia
 ## 🚀 Features
 
 * 🔐 Multi-signature Wallet (M-of-N)
-* 🧠 AI Risk Score integration
+* 🧠 AI Risk Score integration (Upcoming)
 * 👤 Owner Nomination for new users
 * 📜 Proposals for:
 
@@ -177,4 +177,5 @@ View the [License](https://github.com/ahkharsha/MultiSig-OnChain/blob/main/LICEN
 ---
 
 Made with ☕, ❤️, and sleepless nights
-For OnChain Island 🏝️ by Granny Lovers 3000 🚀
+For OnChain Island 🏝️ by Granny Lovers 3000
+Let's bring Grannys OnChain 🚀
