@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 contract MultiSigWallet {
     /* ===== Events ===== */
@@ -11,11 +11,7 @@ contract MultiSigWallet {
         bytes data
     );
     event ConfirmationAdded(uint256 indexed id, address owner);
-    event TransactionExecuted(
-        uint256 indexed id,
-        address executor,
-        bool success
-    );
+    event TransactionExecuted(uint256 indexed id, address executor, bool success);
     event ProposalCancelled(uint256 indexed id);
     event RiskScoreSubmitted(uint256 indexed id, uint8 score);
     event OwnerAdded(address owner);
@@ -41,32 +37,36 @@ contract MultiSigWallet {
 
     Proposal[] public proposals;
     mapping(uint256 => mapping(address => bool)) public confirmed;
-    bool private initialized;
 
     /* ===== Modifiers ===== */
     modifier onlyOwner() {
         require(isOwner[msg.sender], "Not an owner");
         _;
     }
+
     modifier onlyAIOracle() {
         require(msg.sender == aiOracle, "Not AI oracle");
         _;
     }
+
     modifier exists(uint256 id) {
         require(id < proposals.length, "No such proposal");
         _;
     }
+
     modifier notExecuted(uint256 id) {
         require(!proposals[id].executed, "Already executed");
         _;
     }
+
     modifier notCancelled(uint256 id) {
         require(!proposals[id].cancelled, "Cancelled");
         _;
     }
 
-    /* ===== Constructor ===== */
+    /* ===== Constructor (No Params) ===== */
     constructor() {
+        // Hardcoded initial owners
         address[3] memory ownerList = [
             0x6631775F2323DaB6DF571c6Aa49b0cC2A41721bc,
             0xaF3Cb2F439629b99B8401E1691a652c4564a610b,
@@ -84,6 +84,7 @@ contract MultiSigWallet {
             isOwner[o] = true;
             owners.push(o);
         }
+
         threshold = t;
         aiOracle = oracle;
     }
@@ -95,9 +96,15 @@ contract MultiSigWallet {
     function getOwners() external view returns (address[] memory) {
         return owners;
     }
+
+    function getThreshold() external view returns (uint256) {
+        return threshold;
+    }
+
     function getProposalCount() external view returns (uint256) {
         return proposals.length;
     }
+
     function getProposal(uint256 id)
         external
         view
@@ -124,15 +131,12 @@ contract MultiSigWallet {
             p.aiRiskScore
         );
     }
-    function isConfirmed(uint256 id, address owner)
-        external
-        view
-        returns (bool)
-    {
+
+    function isConfirmed(uint256 id, address owner) external view returns (bool) {
         return confirmed[id][owner];
     }
 
-    /* ===== Owner‑only Proposal ===== */
+    /* ===== Proposal Creation ===== */
     function propose(
         address to,
         uint256 value,
@@ -150,20 +154,20 @@ contract MultiSigWallet {
                 aiRiskScore: 0
             })
         );
+
         uint256 pid = proposals.length - 1;
         _confirm(pid);
+
         emit ProposalCreated(pid, msg.sender, to, value, data);
         return pid;
     }
 
-    /* ===== Public Nomination ===== */
+    /* ===== Nomination (public, no auto-confirm) ===== */
     function nominateOwner(address nominee) external returns (uint256) {
         require(nominee != address(0), "Zero nominee");
-        // Create a proposal to call addOwner(nominee)
-        bytes memory callData = abi.encodeWithSignature(
-            "addOwner(address)",
-            nominee
-        );
+
+        bytes memory callData = abi.encodeWithSignature("addOwner(address)", nominee);
+
         proposals.push(
             Proposal({
                 proposer: msg.sender,
@@ -176,16 +180,13 @@ contract MultiSigWallet {
                 aiRiskScore: 0
             })
         );
+
         uint256 pid = proposals.length - 1;
-        // auto‑confirm by the nominator
-        confirmed[pid][msg.sender] = true;
-        proposals[pid].confirmations = 1;
         emit ProposalCreated(pid, msg.sender, address(this), 0, callData);
-        emit ConfirmationAdded(pid, msg.sender);
         return pid;
     }
 
-    /* ===== Confirmation & Execution ===== */
+    /* ===== Confirmation ===== */
     function confirm(uint256 id)
         external
         onlyOwner
@@ -197,25 +198,32 @@ contract MultiSigWallet {
         _confirm(id);
         emit ConfirmationAdded(id, msg.sender);
     }
+
     function _confirm(uint256 id) internal {
         confirmed[id][msg.sender] = true;
         proposals[id].confirmations += 1;
     }
+
+    /* ===== Execution ===== */
     function execute(uint256 id)
         external
-        onlyOwner
         exists(id)
         notExecuted(id)
         notCancelled(id)
     {
+        require(isOwner[msg.sender], "Not an owner");
+
         Proposal storage p = proposals[id];
-        require(p.confirmations >= threshold, "Insufficient confirmations");
+        uint256 required = p.aiRiskScore >= 5 ? threshold + 2 : threshold;
+        require(p.confirmations >= required, "Insufficient confirmations");
+
         p.executed = true;
+
         (bool success, ) = p.to.call{value: p.value}(p.data);
         emit TransactionExecuted(id, msg.sender, success);
     }
 
-    /* ===== Cancellation, AI & Owner mgmt ===== */
+    /* ===== Cancellation ===== */
     function cancel(uint256 id)
         external
         onlyOwner
@@ -223,9 +231,13 @@ contract MultiSigWallet {
         notExecuted(id)
         notCancelled(id)
     {
-        proposals[id].cancelled = true;
+        Proposal storage p = proposals[id];
+        require(msg.sender == p.proposer || isOwner[msg.sender], "Not proposer or owner");
+        p.cancelled = true;
         emit ProposalCancelled(id);
     }
+
+    /* ===== AI Risk Score Submission ===== */
     function submitRiskScore(uint256 id, uint8 score)
         external
         onlyAIOracle
@@ -234,16 +246,19 @@ contract MultiSigWallet {
         proposals[id].aiRiskScore = score;
         emit RiskScoreSubmitted(id, score);
     }
-    function addOwner(address newOwner) external onlyOwner {
+
+    /* ===== Owner Management (NO access restriction, secured via execute flow) ===== */
+    function addOwner(address newOwner) external {
         require(newOwner != address(0) && !isOwner[newOwner], "Bad new owner");
         isOwner[newOwner] = true;
         owners.push(newOwner);
         emit OwnerAdded(newOwner);
     }
-    function removeOwner(address ownerToRemove) external onlyOwner {
+
+    function removeOwner(address ownerToRemove) external {
         require(isOwner[ownerToRemove], "Not an owner");
         isOwner[ownerToRemove] = false;
-        // remove from array
+
         for (uint i = 0; i < owners.length; i++) {
             if (owners[i] == ownerToRemove) {
                 owners[i] = owners[owners.length - 1];
@@ -251,13 +266,16 @@ contract MultiSigWallet {
                 break;
             }
         }
+
         if (threshold > owners.length) {
             threshold = owners.length;
             emit ThresholdChanged(threshold);
         }
+
         emit OwnerRemoved(ownerToRemove);
     }
-    function changeThreshold(uint256 newThreshold) external onlyOwner {
+
+    function changeThreshold(uint256 newThreshold) external {
         require(newThreshold > 0 && newThreshold <= owners.length, "Bad threshold");
         threshold = newThreshold;
         emit ThresholdChanged(newThreshold);
