@@ -1,541 +1,559 @@
-{   
-    "abi":
-    [
+{
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
         {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
         },
         {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            },
-            {
-            "indexed": false,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-            }
-        ],
-        "name": "ConfirmationAdded",
-        "type": "event"
-        },
-        {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": false,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-            }
-        ],
-        "name": "OwnerAdded",
-        "type": "event"
-        },
-        {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": false,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-            }
-        ],
-        "name": "OwnerRemoved",
-        "type": "event"
-        },
-        {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            }
-        ],
-        "name": "ProposalCancelled",
-        "type": "event"
-        },
-        {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            },
-            {
-            "indexed": false,
-            "internalType": "address",
-            "name": "proposer",
-            "type": "address"
-            },
-            {
-            "indexed": false,
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-            },
-            {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-            },
-            {
-            "indexed": false,
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-            }
-        ],
-        "name": "ProposalCreated",
-        "type": "event"
-        },
-        {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            },
-            {
-            "indexed": false,
-            "internalType": "uint8",
-            "name": "score",
-            "type": "uint8"
-            }
-        ],
-        "name": "RiskScoreSubmitted",
-        "type": "event"
-        },
-        {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": false,
-            "internalType": "uint256",
-            "name": "newThreshold",
-            "type": "uint256"
-            }
-        ],
-        "name": "ThresholdChanged",
-        "type": "event"
-        },
-        {
-        "anonymous": false,
-        "inputs": [
-            {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            },
-            {
-            "indexed": false,
-            "internalType": "address",
-            "name": "executor",
-            "type": "address"
-            },
-            {
-            "indexed": false,
-            "internalType": "bool",
-            "name": "success",
-            "type": "bool"
-            }
-        ],
-        "name": "TransactionExecuted",
-        "type": "event"
-        },
-        {
-        "stateMutability": "payable",
-        "type": "fallback"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "address",
-            "name": "newOwner",
-            "type": "address"
-            }
-        ],
-        "name": "addOwner",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [],
-        "name": "aiOracle",
-        "outputs": [
-            {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            }
-        ],
-        "name": "cancel",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "newThreshold",
-            "type": "uint256"
-            }
-        ],
-        "name": "changeThreshold",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            }
-        ],
-        "name": "confirm",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-            },
-            {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-            }
-        ],
-        "name": "confirmed",
-        "outputs": [
-            {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            }
-        ],
-        "name": "execute",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [],
-        "name": "getOwners",
-        "outputs": [
-            {
-            "internalType": "address[]",
-            "name": "",
-            "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            }
-        ],
-        "name": "getProposal",
-        "outputs": [
-            {
-            "internalType": "address",
-            "name": "proposer",
-            "type": "address"
-            },
-            {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-            },
-            {
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-            },
-            {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-            },
-            {
-            "internalType": "uint256",
-            "name": "confirmations",
-            "type": "uint256"
-            },
-            {
-            "internalType": "bool",
-            "name": "executed",
-            "type": "bool"
-            },
-            {
-            "internalType": "bool",
-            "name": "cancelled",
-            "type": "bool"
-            },
-            {
-            "internalType": "uint8",
-            "name": "aiRiskScore",
-            "type": "uint8"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [],
-        "name": "getProposalCount",
-        "outputs": [
-            {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            },
-            {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-            }
-        ],
-        "name": "isConfirmed",
-        "outputs": [
-            {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-            }
-        ],
-        "name": "isOwner",
-        "outputs": [
-            {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-            }
-        ],
-        "name": "owners",
-        "outputs": [
-            {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-            }
-        ],
-        "name": "proposals",
-        "outputs": [
-            {
-            "internalType": "address",
-            "name": "proposer",
-            "type": "address"
-            },
-            {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-            },
-            {
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-            },
-            {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-            },
-            {
-            "internalType": "uint256",
-            "name": "confirmations",
-            "type": "uint256"
-            },
-            {
-            "internalType": "bool",
-            "name": "executed",
-            "type": "bool"
-            },
-            {
-            "internalType": "bool",
-            "name": "cancelled",
-            "type": "bool"
-            },
-            {
-            "internalType": "uint8",
-            "name": "aiRiskScore",
-            "type": "uint8"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-            },
-            {
-            "internalType": "uint256",
-            "name": "value",
-            "type": "uint256"
-            },
-            {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-            }
-        ],
-        "name": "propose",
-        "outputs": [
-            {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "address",
-            "name": "ownerToRemove",
-            "type": "address"
-            }
-        ],
-        "name": "removeOwner",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [
-            {
-            "internalType": "uint256",
-            "name": "id",
-            "type": "uint256"
-            },
-            {
-            "internalType": "uint8",
-            "name": "score",
-            "type": "uint8"
-            }
-        ],
-        "name": "submitRiskScore",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-        },
-        {
-        "inputs": [],
-        "name": "threshold",
-        "outputs": [
-            {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-        },
-        {
-        "stateMutability": "payable",
-        "type": "receive"
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
         }
-    ]
+      ],
+      "name": "ConfirmationAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnerAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnerRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProposalCancelled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "proposer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "ProposalCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "score",
+          "type": "uint8"
+        }
+      ],
+      "name": "RiskScoreSubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newThreshold",
+          "type": "uint256"
+        }
+      ],
+      "name": "ThresholdChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "executor",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "name": "TransactionExecuted",
+      "type": "event"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "addOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "aiOracle",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancel",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "newThreshold",
+          "type": "uint256"
+        }
+      ],
+      "name": "changeThreshold",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "confirm",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "confirmed",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "execute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOwners",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProposal",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "proposer",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "confirmations",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "executed",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "cancelled",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint8",
+          "name": "aiRiskScore",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getProposalCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "isConfirmed",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "nominee",
+          "type": "address"
+        }
+      ],
+      "name": "nominateOwner",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "owners",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "proposals",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "proposer",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint256",
+          "name": "confirmations",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "executed",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "cancelled",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint8",
+          "name": "aiRiskScore",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "propose",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "ownerToRemove",
+          "type": "address"
+        }
+      ],
+      "name": "removeOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint8",
+          "name": "score",
+          "type": "uint8"
+        }
+      ],
+      "name": "submitRiskScore",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "threshold",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ]
 }

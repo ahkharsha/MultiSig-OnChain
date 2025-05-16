@@ -19,15 +19,18 @@ export default function NominateSelf() {
 
     try {
       setLoading(true)
-      // Encode addOwner(address) calldata
-      const iface = new ethers.Interface(contractABI.abi)
-      const data = iface.encodeFunctionData('addOwner', [address])
 
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, signer)
-      const tx = await contract.propose(CONTRACT_ADDRESS, 0, data)
+      const contract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        contractABI.abi,
+        signer
+      )
+
+      // Call the new nominateOwner function
+      const tx = await contract.nominateOwner(address)
       await tx.wait()
 
-      toast.success('Nomination proposal submitted!')
+      toast.success('Priority Owner Nomination Proposal submitted!')
     } catch (err: any) {
       console.error(err)
       toast.error(err.reason || err.message || 'Nomination failed.')
@@ -50,7 +53,7 @@ export default function NominateSelf() {
             : 'bg-yellow-400 hover:bg-yellow-500 text-white'
         }`}
       >
-        {loading ? 'Submitting...' : 'Nominate Yourself'}
+        {loading ? 'Submitting…' : 'Nominate Yourself'}
       </button>
     </div>
   )
