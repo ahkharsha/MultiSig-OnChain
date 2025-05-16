@@ -171,7 +171,8 @@ Place these in the /assets folder:
 
 ## 📜 License
 
-MIT
+This project is licensed under the MIT License.
+View the [License](https://github.com/ahkharsha/MultiSig-OnChain/blob/main/LICENSE) file for more details.
 
 ---
 
