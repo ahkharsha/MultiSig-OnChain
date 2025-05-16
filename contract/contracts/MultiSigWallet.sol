@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.19;
 
 contract MultiSigWallet {
     event ProposalCreated(uint256 indexed id, address proposer, address to, uint256 value, bytes data);
@@ -10,6 +10,11 @@ contract MultiSigWallet {
     event OwnerAdded(address owner);
     event OwnerRemoved(address owner);
     event ThresholdChanged(uint256 newThreshold);
+
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint256 public threshold;
+    address public aiOracle;
 
     struct Proposal {
         address proposer;
@@ -22,54 +27,124 @@ contract MultiSigWallet {
         uint8 aiRiskScore;
     }
 
-    address[] public owners;
-    mapping(address => bool) public isOwner;
-    uint256 public threshold;
-    address public aiOracle;
     Proposal[] public proposals;
     mapping(uint256 => mapping(address => bool)) public confirmed;
 
-    modifier onlyOwner() {
-        require(isOwner[msg.sender], "Not owner"); _;
-    }
-    modifier exists(uint256 id) {
-        require(id < proposals.length, "No proposal"); _;
-    }
-    modifier notExecuted(uint256 id) {
-        require(!proposals[id].executed, "Already executed"); _;
-    }
-    modifier notCancelled(uint256 id) {
-        require(!proposals[id].cancelled, "Cancelled"); _;
-    }
+    constructor() {
+        address[3] memory ownerList = [
+            0x6631775F2323DaB6DF571c6Aa49b0cC2A41721bc,
+            0xaF3Cb2F439629b99B8401E1691a652c4564a610b,
+            0x1d19F53854557C266CDCcA89314DD3f224affd0d
+        ];
 
-    constructor(address[] memory _owners, uint256 _threshold, address _aiOracle) {
-        require(_owners.length > 0, "Owners required");
-        require(_threshold > 0 && _threshold <= _owners.length, "Invalid threshold");
-        aiOracle = _aiOracle;
-        for (uint i = 0; i < _owners.length; i++) {
-            address o = _owners[i];
-            require(o != address(0) && !isOwner[o], "Invalid or duplicate owner");
+        uint256 t = 2;
+        address oracle = 0x6631775F2323DaB6DF571c6Aa49b0cC2A41721bc;
+
+        require(t > 0 && t <= ownerList.length, "Invalid threshold");
+        require(oracle != address(0), "Invalid oracle");
+
+        for (uint i = 0; i < ownerList.length; i++) {
+            address o = ownerList[i];
+            require(o != address(0) && !isOwner[o], "Bad owner");
             isOwner[o] = true;
             owners.push(o);
         }
-        threshold = _threshold;
+
+        threshold = t;
+        aiOracle = oracle;
     }
 
     receive() external payable {}
+    fallback() external payable {}
 
-    function getOwners() external view returns (address[] memory) { return owners; }
-    function getThreshold() external view returns (uint256) { return threshold; }
-    function proposalCount() external view returns (uint256) { return proposals.length; }
-
-    function propose(address to, uint256 value, bytes calldata data) external onlyOwner returns (uint256) {
-        proposals.push(Proposal(msg.sender, to, value, data, 0, false, false, 0));
-        uint256 id = proposals.length - 1;
-        _confirm(id);
-        emit ProposalCreated(id, msg.sender, to, value, data);
-        return id;
+    modifier onlyOwner() {
+        require(isOwner[msg.sender], "Not an owner");
+        _;
+    }
+    modifier onlyAIOracle() {
+        require(msg.sender == aiOracle, "Not AI oracle");
+        _;
+    }
+    modifier exists(uint256 id) {
+        require(id < proposals.length, "No such proposal");
+        _;
+    }
+    modifier notExecuted(uint256 id) {
+        require(!proposals[id].executed, "Already executed");
+        _;
+    }
+    modifier notCancelled(uint256 id) {
+        require(!proposals[id].cancelled, "Cancelled");
+        _;
     }
 
-    function confirm(uint256 id) external onlyOwner exists(id) notExecuted(id) notCancelled(id) {
+    function getOwners() external view returns (address[] memory) {
+        return owners;
+    }
+
+    function getProposalCount() external view returns (uint256) {
+        return proposals.length;
+    }
+
+    function getProposal(uint256 id)
+        external
+        view
+        returns (
+            address proposer,
+            address to,
+            uint256 value,
+            bytes memory data,
+            uint256 confirmations,
+            bool executed,
+            bool cancelled,
+            uint8 aiRiskScore
+        )
+    {
+        Proposal storage p = proposals[id];
+        return (
+            p.proposer,
+            p.to,
+            p.value,
+            p.data,
+            p.confirmations,
+            p.executed,
+            p.cancelled,
+            p.aiRiskScore
+        );
+    }
+
+    function isConfirmed(uint256 id, address owner) external view returns (bool) {
+        return confirmed[id][owner];
+    }
+
+    function propose(address to, uint256 value, bytes calldata data)
+        external
+        onlyOwner
+        returns (uint256)
+    {
+        proposals.push(Proposal({
+            proposer: msg.sender,
+            to: to,
+            value: value,
+            data: data,
+            confirmations: 0,
+            executed: false,
+            cancelled: false,
+            aiRiskScore: 0
+        }));
+        uint256 pid = proposals.length - 1;
+        _confirm(pid);
+        emit ProposalCreated(pid, msg.sender, to, value, data);
+        return pid;
+    }
+
+    function confirm(uint256 id)
+        external
+        onlyOwner
+        exists(id)
+        notExecuted(id)
+        notCancelled(id)
+    {
         require(!confirmed[id][msg.sender], "Already confirmed");
         _confirm(id);
         emit ConfirmationAdded(id, msg.sender);
@@ -77,10 +152,16 @@ contract MultiSigWallet {
 
     function _confirm(uint256 id) internal {
         confirmed[id][msg.sender] = true;
-        proposals[id].confirmations++;
+        proposals[id].confirmations += 1;
     }
 
-    function execute(uint256 id) external onlyOwner exists(id) notExecuted(id) notCancelled(id) {
+    function execute(uint256 id)
+        external
+        onlyOwner
+        exists(id)
+        notExecuted(id)
+        notCancelled(id)
+    {
         Proposal storage p = proposals[id];
         require(p.confirmations >= threshold, "Insufficient confirmations");
         p.executed = true;
@@ -88,19 +169,28 @@ contract MultiSigWallet {
         emit TransactionExecuted(id, msg.sender, success);
     }
 
-    function cancel(uint256 id) external onlyOwner exists(id) notExecuted(id) notCancelled(id) {
+    function cancel(uint256 id)
+        external
+        onlyOwner
+        exists(id)
+        notExecuted(id)
+        notCancelled(id)
+    {
         proposals[id].cancelled = true;
         emit ProposalCancelled(id);
     }
 
-    function submitRisk(uint256 id, uint8 score) external exists(id) {
-        require(msg.sender == aiOracle, "Only oracle");
+    function submitRiskScore(uint256 id, uint8 score)
+        external
+        onlyAIOracle
+        exists(id)
+    {
         proposals[id].aiRiskScore = score;
         emit RiskScoreSubmitted(id, score);
     }
 
     function addOwner(address newOwner) external onlyOwner {
-        require(newOwner != address(0) && !isOwner[newOwner], "Invalid new owner");
+        require(newOwner != address(0) && !isOwner[newOwner], "Bad new owner");
         isOwner[newOwner] = true;
         owners.push(newOwner);
         emit OwnerAdded(newOwner);
@@ -124,7 +214,7 @@ contract MultiSigWallet {
     }
 
     function changeThreshold(uint256 newThreshold) external onlyOwner {
-        require(newThreshold > 0 && newThreshold <= owners.length, "Invalid threshold");
+        require(newThreshold > 0 && newThreshold <= owners.length, "Bad threshold");
         threshold = newThreshold;
         emit ThresholdChanged(newThreshold);
     }

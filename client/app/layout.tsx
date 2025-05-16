@@ -1,16 +1,12 @@
-import './globals.css';
-import { ChakraProvider } from '@chakra-ui/react';
+'use client'
 
-export const metadata = { title: 'MultiSig UI' };
+import './globals.css'
+import { WalletProvider } from '../components/WalletContext'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <ChakraProvider>
-          {children}
-        </ChakraProvider>
-      </body>
+      <body>{typeof window !== 'undefined' ? <WalletProvider>{children}</WalletProvider> : null}</body>
     </html>
-  );
+  )
 }
