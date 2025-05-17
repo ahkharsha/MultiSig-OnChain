@@ -1,3 +1,4 @@
+// app/layout.tsx
 'use client'
 
 import './globals.css'
@@ -7,6 +8,7 @@ import type { ReactNode } from 'react'
 import Head from 'next/head'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import NetworkGuard from '../components/NetworkGuard'
 
 export default function RootLayout({
   children,
@@ -19,7 +21,7 @@ export default function RootLayout({
         <title>MultiSig Wallet</title>
         <meta name="description" content="Secure multi-signature wallet" />
       </Head>
-      <body className="h-screen flex flex-col overflow-hidden"> {/* Changed to h-screen and added overflow-hidden */}
+      <body className="h-screen flex flex-col overflow-hidden">
         <Toaster 
           position="top-center"
           toastOptions={{
@@ -33,8 +35,10 @@ export default function RootLayout({
         {typeof window !== 'undefined' && (
           <WalletProvider>
             <Header />
-            <main className="flex-1 flex items-center justify-center overflow-y-auto"> {/* Added overflow-y-auto */}
-              {children}
+            <main className="flex-1 flex items-center justify-center overflow-y-auto">
+              <NetworkGuard>
+                {children}
+              </NetworkGuard>
             </main>
             <Footer />
           </WalletProvider>

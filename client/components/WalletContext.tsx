@@ -1,63 +1,173 @@
+// components/WalletContext.tsx
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ethers } from 'ethers'
+import { DEFAULT_CHAIN } from '../constants/chain'
+import toast from 'react-hot-toast'
 
 declare global {
-    interface Window {
-        ethereum?: any
-    }
+  interface Window {
+    ethereum?: any
+  }
 }
 
-const WalletContext = createContext<any>(null)
+interface WalletContextType {
+  address: string | null
+  provider: ethers.BrowserProvider | null
+  signer: ethers.Signer | null
+  chainId: number | null
+  targetChain: typeof DEFAULT_CHAIN
+  switchChain: () => Promise<void>
+  isCorrectChain: boolean
+}
+
+const WalletContext = createContext<WalletContextType | null>(null)
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
-    const [address, setAddress] = useState<string | null>(null)
-    const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
-    const [signer, setSigner] = useState<ethers.Signer | null>(null)
+  const [address, setAddress] = useState<string | null>(null)
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
+  const [signer, setSigner] = useState<ethers.Signer | null>(null)
+  const [chainId, setChainId] = useState<number | null>(null)
+  
+  const targetChain = DEFAULT_CHAIN
+  const isCorrectChain = chainId === targetChain.id
 
-    useEffect(() => {
-        const handleAccountsChanged = (accounts: string[]) => {
-            if (accounts.length === 0) {
-                setAddress(null)
-                setSigner(null)
-            } else {
-                setAddress(accounts[0])
+  const switchChain = async () => {
+    if (!window.ethereum) {
+      toast.error('Please install MetaMask!', {
+        style: {
+          background: '#1A1A1A',
+          color: '#FFFFFF',
+          border: '1px solid #FF4320'
+        }
+      })
+      return
+    }
+
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: `0x${targetChain.id.toString(16)}` }],
+      })
+    } catch (switchError: any) {
+      // This error code indicates that the chain has not been added to MetaMask
+      if (switchError.code === 4902) {
+        try {
+          const userConfirmed = confirm(
+            `Would you like to add ${targetChain.name} to your wallet?`
+          )
+          
+          if (userConfirmed) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: `0x${targetChain.id.toString(16)}`,
+                  chainName: targetChain.name,
+                  nativeCurrency: {
+                    name: 'ETH',
+                    symbol: 'ETH',
+                    decimals: 18,
+                  },
+                  rpcUrls: [targetChain.rpcUrl],
+                  blockExplorerUrls: [targetChain.explorerUrl],
+                },
+              ],
+            })
+          }
+        } catch (addError) {
+          console.error('Error adding chain:', addError)
+          toast.error('Failed to add network', {
+            style: {
+              background: '#1A1A1A',
+              color: '#FFFFFF',
+              border: '1px solid #FF4320'
             }
+          })
         }
+      } else {
+        console.error('Error switching chain:', switchError)
+        toast.error('Failed to switch network', {
+          style: {
+            background: '#1A1A1A',
+            color: '#FFFFFF',
+            border: '1px solid #FF4320'
+          }
+        })
+      }
+    }
+  }
 
-        const connect = async () => {
-            if (!window.ethereum) return
+  const handleAccountsChanged = (accounts: string[]) => {
+    if (accounts.length === 0) {
+      setAddress(null)
+      setSigner(null)
+    } else {
+      setAddress(accounts[0])
+    }
+  }
 
-            const provider = new ethers.BrowserProvider(window.ethereum)
-            const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+  const handleChainChanged = (chainIdHex: string) => {
+    const chainId = parseInt(chainIdHex, 16)
+    setChainId(chainId)
+  }
 
-            if (accounts.length > 0) {
-                const signer = await provider.getSigner()
-                setProvider(provider)
-                setSigner(signer)
-                setAddress(accounts[0])
-            }
+  const connect = async () => {
+    if (!window.ethereum) return
 
-            window.ethereum.on('accountsChanged', handleAccountsChanged)
-        }
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    setProvider(provider)
 
-        if (typeof window !== 'undefined') {
-            connect()
-        }
+    // Get current chain ID
+    const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' })
+    handleChainChanged(chainIdHex)
 
-        return () => {
-            if (window.ethereum) {
-                window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
-            }
-        }
-    }, [])
+    // Get accounts if already connected
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+    if (accounts.length > 0) {
+      const signer = await provider.getSigner()
+      setSigner(signer)
+      setAddress(accounts[0])
+    }
 
-    return (
-        <WalletContext.Provider value={{ address, provider, signer }}>
-            {children}
-        </WalletContext.Provider>
-    )
+    // Set up event listeners
+    window.ethereum.on('accountsChanged', handleAccountsChanged)
+    window.ethereum.on('chainChanged', handleChainChanged)
+  }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      connect()
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
+        window.ethereum.removeListener('chainChanged', handleChainChanged)
+      }
+    }
+  }, [])
+
+  return (
+    <WalletContext.Provider value={{ 
+      address, 
+      provider, 
+      signer, 
+      chainId,
+      targetChain,
+      switchChain,
+      isCorrectChain
+    }}>
+      {children}
+    </WalletContext.Provider>
+  )
 }
 
-export const useWallet = () => useContext(WalletContext)
+export const useWallet = () => {
+  const context = useContext(WalletContext)
+  if (!context) {
+    throw new Error('useWallet must be used within a WalletProvider')
+  }
+  return context
+}
