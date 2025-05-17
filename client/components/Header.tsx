@@ -9,9 +9,9 @@ export default function Header() {
   return (
     <header className="bg-[#1A1A1A] border-b border-[#2A2A2A] sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-        <Link href="/home" className="text-2xl font-bold">
+        <Link href={address ? "/home" : "/"} className="text-2xl font-bold">
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF4320] to-[#FF914D]">
-            MultiSig
+            MultiSig OnChain
           </span>
         </Link>
         

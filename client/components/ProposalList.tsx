@@ -38,6 +38,11 @@ export default function ProposalList() {
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [threshold, setThreshold] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [expandedSections, setExpandedSections] = useState({
+    active: true,
+    completed: false,
+    cancelled: false
+  })
 
   const fetchProposals = useCallback(async () => {
     if (!provider || !address) return
@@ -131,6 +136,13 @@ export default function ProposalList() {
       })
     }
   }, [provider, fetchProposals])
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }))
+  }
 
   const doConfirm = async (id: number) => {
     if (!signer) return toast.error('Not connected', {
@@ -334,6 +346,41 @@ export default function ProposalList() {
     )
   }
 
+  const renderProposalSection = (title: string, proposals: Proposal[], section: keyof typeof expandedSections) => {
+    return (
+      <div key={section} className="mb-6">
+        <div 
+          className="flex justify-between items-center cursor-pointer p-3 bg-[#2A2A2A] rounded-lg hover:bg-[#3A3A3A] transition"
+          onClick={() => toggleSection(section)}
+        >
+          <h2 className="text-xl font-bold text-white">
+            {title} <span className="text-[#FF4320]">({proposals.length})</span>
+          </h2>
+          <svg
+            className={`w-5 h-5 text-[#FF4320] transition-transform ${expandedSections[section] ? 'rotate-180' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        
+        {expandedSections[section] && (
+          <div className="mt-2 grid gap-4">
+            {proposals.length === 0 ? (
+              <div className="card text-center text-gray-400 py-6">
+                No {title.toLowerCase()} proposals
+              </div>
+            ) : (
+              proposals.map(renderProposal)
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   const shortenAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
   }
@@ -360,44 +407,9 @@ export default function ProposalList() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-white mb-3">Active Proposals</h2>
-        {active.length === 0 ? (
-          <div className="card text-center text-gray-400">
-            No active proposals
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {active.map(renderProposal)}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <h2 className="text-xl font-bold text-white mb-3">Completed Proposals</h2>
-        {completed.length === 0 ? (
-          <div className="card text-center text-gray-400">
-            No completed proposals
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {completed.map(renderProposal)}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <h2 className="text-xl font-bold text-white mb-3">Cancelled Proposals</h2>
-        {cancelled.length === 0 ? (
-          <div className="card text-center text-gray-400">
-            No cancelled proposals
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {cancelled.map(renderProposal)}
-          </div>
-        )}
-      </div>
+      {renderProposalSection('Active Proposals', active, 'active')}
+      {renderProposalSection('Completed Proposals', completed, 'completed')}
+      {renderProposalSection('Cancelled Proposals', cancelled, 'cancelled')}
     </div>
   )
 }

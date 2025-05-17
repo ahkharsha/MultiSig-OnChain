@@ -5,6 +5,7 @@ import { WalletProvider } from '../components/WalletContext'
 import { Toaster } from 'react-hot-toast'
 import type { ReactNode } from 'react'
 import Head from 'next/head'
+import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 export default function RootLayout({
@@ -18,7 +19,7 @@ export default function RootLayout({
         <title>MultiSig Wallet</title>
         <meta name="description" content="Secure multi-signature wallet" />
       </Head>
-      <body className="h-full flex flex-col">
+      <body className="h-screen flex flex-col overflow-hidden"> {/* Changed to h-screen and added overflow-hidden */}
         <Toaster 
           position="top-center"
           toastOptions={{
@@ -31,12 +32,11 @@ export default function RootLayout({
         />
         {typeof window !== 'undefined' && (
           <WalletProvider>
-            <div className="flex flex-col h-full">
-              <div className="flex-none">
-                {children}
-              </div>
-              <Footer />
-            </div>
+            <Header />
+            <main className="flex-1 flex items-center justify-center overflow-y-auto"> {/* Added overflow-y-auto */}
+              {children}
+            </main>
+            <Footer />
           </WalletProvider>
         )}
       </body>

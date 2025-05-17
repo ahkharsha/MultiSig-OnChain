@@ -106,12 +106,12 @@ export default function InfoPanel() {
 
   return (
     <div className="card space-y-4">
-      <h2 className="text-xl font-semibold text-white">Wallet Configuration</h2>
+      <h2 className="text-xl font-semibold text-white">Multisignature Configuration</h2>
       
       <div>
         <h3 className="text-sm font-medium text-gray-400 mb-1">Threshold</h3>
         <p className="font-mono bg-[#2A2A2A] p-3 rounded-lg text-white">
-          {threshold} out of {owners.length} required
+          {threshold} Confirmations out of {owners.length} Total Owners required
         </p>
       </div>
 
