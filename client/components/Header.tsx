@@ -12,7 +12,7 @@ export default function Header() {
   const navLinks = [
     { name: 'Dashboard', href: '/home', show: true },
     { name: 'Create Proposal', href: '/home#create', show: address && isCorrectChain },
-    { name: 'Proposals', href: '/home#proposals', show: address && isCorrectChain },
+    { name: 'Active Proposals', href: '/home#proposals', show: address && isCorrectChain },
   ]
 
   return (
