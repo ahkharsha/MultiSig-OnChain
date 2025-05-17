@@ -19,18 +19,10 @@ export default function NominateSelf() {
 
     try {
       setLoading(true)
-
-      const contract = new ethers.Contract(
-        CONTRACT_ADDRESS,
-        contractABI.abi,
-        signer
-      )
-
-      // Call the new nominateOwner function
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, signer)
       const tx = await contract.nominateOwner(address)
       await tx.wait()
-
-      toast.success('Priority Owner Nomination Proposal submitted!')
+      toast.success('Nomination submitted!')
     } catch (err: any) {
       console.error(err)
       toast.error(err.reason || err.message || 'Nomination failed.')
@@ -40,20 +32,16 @@ export default function NominateSelf() {
   }
 
   return (
-    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
-      <p className="text-yellow-800 mb-2">
+    <div className="bg-[#FF4320]/10 border border-[#FF4320]/20 p-4 rounded-lg">
+      <p className="text-[#FF4320] mb-3">
         You are not an owner yet. Nominate yourself to join the multisig!
       </p>
       <button
         onClick={handleNominate}
         disabled={loading}
-        className={`px-4 py-2 rounded-md font-medium transition ${
-          loading
-            ? 'bg-yellow-300 text-yellow-700 cursor-not-allowed'
-            : 'bg-yellow-400 hover:bg-yellow-500 text-white'
-        }`}
+        className={`btn-secondary w-full ${loading ? 'opacity-70' : ''}`}
       >
-        {loading ? 'Submitting…' : 'Nominate Yourself'}
+        {loading ? 'Submitting...' : 'Nominate Yourself'}
       </button>
     </div>
   )

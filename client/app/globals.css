@@ -1,16 +1,31 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* Custom utility for inputs & buttons */
-.input {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-300;
+/* Base styles */
+body {
+  @apply bg-black text-white;
 }
 
+/* Inputs */
+.input {
+  @apply w-full px-4 py-2 bg-[#1A1A1A] border border-gray-800 rounded-lg;
+  @apply focus:outline-none focus:ring-2 focus:ring-[#FF4320]/50 focus:border-transparent;
+  @apply text-white placeholder-gray-500 transition;
+}
+
+/* Buttons */
 .btn-primary {
-  @apply px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition;
+  @apply px-6 py-3 bg-[#FF4320] text-black font-bold rounded-lg;
+  @apply hover:bg-[#ff5c3d] transition-all duration-300;
+  @apply transform hover:scale-105 shadow-lg shadow-[#FF4320]/30;
 }
 
 .btn-secondary {
-  @apply px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition;
+  @apply px-6 py-3 bg-transparent border-2 border-[#FF4320] text-[#FF4320] font-bold rounded-lg;
+  @apply hover:bg-[#FF4320]/10 transition-all duration-300;
+}
+
+/* Cards */
+.card {
+  @apply bg-[#1A1A1A] rounded-xl p-6 border border-gray-800;
+  @apply hover:border-[#FF4320]/50 transition-colors duration-300;
 }

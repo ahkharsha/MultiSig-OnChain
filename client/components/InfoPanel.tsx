@@ -20,6 +20,7 @@ export default function InfoPanel() {
 
     try {
       setLoading(true)
+      setError(null)
 
       const contract = new ethers.Contract(
         CONTRACT_ADDRESS,
@@ -27,16 +28,23 @@ export default function InfoPanel() {
         provider
       )
 
-      const _owners: string[] = await contract.getOwners()
-      const _thresholdBigInt: bigint = await contract.threshold()
-      const _thresholdNum = Number(_thresholdBigInt)
+      const [_owners, _threshold] = await Promise.all([
+        contract.getOwners(),
+        contract.threshold()
+      ])
 
       setOwners(_owners)
-      setThreshold(_thresholdNum)
+      setThreshold(Number(_threshold))
     } catch (err) {
       console.error(err)
-      setError('Failed to fetch wallet info.')
-      toast.error('Could not load wallet info.')
+      setError('Failed to fetch wallet info')
+      toast.error('Could not load wallet info', {
+        style: {
+          background: '#1A1A1A',
+          color: '#FFFFFF',
+          border: '1px solid #FF4320'
+        }
+      })
     } finally {
       setLoading(false)
     }
@@ -71,39 +79,68 @@ export default function InfoPanel() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow p-6 text-center text-gray-500">
-        Loading wallet info…
+      <div className="card">
+        <div className="animate-pulse space-y-4">
+          <div className="h-6 bg-[#2A2A2A] rounded w-1/2"></div>
+          <div className="h-4 bg-[#2A2A2A] rounded w-3/4"></div>
+          <div className="h-4 bg-[#2A2A2A] rounded"></div>
+          <div className="h-4 bg-[#2A2A2A] rounded w-5/6"></div>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border-l-4 border-red-400 p-6 rounded-md">
-        <p className="text-red-800 mb-2">{error}</p>
+      <div className="bg-red-900/10 border-l-4 border-red-500 p-4 rounded-md">
+        <p className="text-red-400">{error}</p>
+        <button 
+          onClick={fetchInfo}
+          className="mt-2 text-sm text-red-400 hover:text-red-300 font-medium"
+        >
+          Retry
+        </button>
       </div>
     )
   }
 
-  // If user is not in owners list, show nomination component
-  if (address && !owners.includes(address)) {
-    return <NominateSelf />
-  }
-
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <h2 className="text-xl font-semibold mb-2">Wallet Info</h2>
-      <p className="text-gray-600 mb-1">
-        <span className="font-medium">Threshold:</span> {threshold}
-      </p>
-      <p className="text-gray-600 font-medium">Owners:</p>
-      <ul className="list-disc ml-5 space-y-1">
-        {owners.map((o) => (
-          <li key={o} className="text-gray-700 break-all">
-            {o}
-          </li>
-        ))}
-      </ul>
+    <div className="card space-y-4">
+      <h2 className="text-xl font-semibold text-white">Wallet Configuration</h2>
+      
+      <div>
+        <h3 className="text-sm font-medium text-gray-400 mb-1">Threshold</h3>
+        <p className="font-mono bg-[#2A2A2A] p-3 rounded-lg text-white">
+          {threshold} out of {owners.length} required
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-gray-400 mb-1">Owners</h3>
+        <ul className="space-y-2">
+          {owners.map((owner) => (
+            <li 
+              key={owner} 
+              className={`font-mono text-sm p-3 rounded-lg break-all ${
+                owner === address ? 'bg-[#FF4320]/10 border border-[#FF4320]/20' : 'bg-[#2A2A2A]'
+              }`}
+            >
+              {owner}
+              {owner === address && (
+                <span className="ml-2 text-xs bg-[#FF4320] text-black px-2 py-0.5 rounded-full">
+                  You
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {address && !owners.includes(address) && (
+        <div className="pt-2">
+          <NominateSelf />
+        </div>
+      )}
     </div>
   )
 }

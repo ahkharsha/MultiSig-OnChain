@@ -8,23 +8,26 @@ export default function ConnectWalletButton() {
   const router = useRouter()
 
   return (
-    <div className="mt-8 flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4">
       {address ? (
         <>
-          <p className="text-lg font-semibold">Connected: {address}</p>
+          <div className="w-full p-3 bg-[#1A1A1A] rounded-lg text-center border border-[#2A2A2A]">
+            <p className="text-xs text-gray-400">Connected as</p>
+            <p className="font-mono text-sm text-white break-all">{address}</p>
+          </div>
           <button
             onClick={() => router.push('/home')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="btn-primary w-full py-3"
           >
             Continue to Dashboard
           </button>
         </>
       ) : (
         <button
-          className="bg-gray-500 text-white px-4 py-2 rounded animate-pulse cursor-not-allowed"
-          disabled
+          onClick={() => window.ethereum?.request({ method: 'eth_requestAccounts' })}
+          className="btn-primary w-full py-3"
         >
-          Connecting...
+          Connect Wallet
         </button>
       )}
     </div>

@@ -27,7 +27,13 @@ export default function CreateProposal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!signer) {
-      toast.error('Please connect your wallet.')
+      toast.error('Please connect your wallet.', {
+        style: {
+          background: '#1A1A1A',
+          color: '#FFFFFF',
+          border: '1px solid #FF4320'
+        }
+      })
       return
     }
 
@@ -63,7 +69,13 @@ export default function CreateProposal() {
           throw new Error('Unknown action.')
       }
     } catch (err: any) {
-      toast.error(err.message || 'Validation error.')
+      toast.error(err.message || 'Validation error.', {
+        style: {
+          background: '#1A1A1A',
+          color: '#FFFFFF',
+          border: '1px solid #FF4320'
+        }
+      })
       return
     }
 
@@ -71,8 +83,14 @@ export default function CreateProposal() {
     try {
       const tx = await contract.propose(txTo, txValue, txData)
       await tx.wait()
-      toast.success('Proposal submitted!')
-      window.dispatchEvent(new Event('proposalCreated')) // trigger refresh
+      toast.success('Proposal submitted!', {
+        style: {
+          background: '#1A1A1A',
+          color: '#FFFFFF',
+          border: '1px solid #FF4320'
+        }
+      })
+      window.dispatchEvent(new Event('proposalCreated'))
       setTo('')
       setValue('')
       setData('')
@@ -80,62 +98,121 @@ export default function CreateProposal() {
       setNewThreshold('')
     } catch (err: any) {
       console.error(err)
-      toast.error(err.reason || err.message || 'Submission failed.')
+      toast.error(err.reason || err.message || 'Submission failed.', {
+        style: {
+          background: '#1A1A1A',
+          color: '#FFFFFF',
+          border: '1px solid #FF4320'
+        }
+      })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
-      <h2 className="text-xl font-semibold">Create Proposal</h2>
-      <label className="block">
-        <span className="font-medium">Action</span>
-        <select
-          value={action}
-          onChange={(e) => setAction(e.target.value as ActionType)}
-          className="input"
+    <div className="card">
+      <h2 className="text-xl font-semibold text-white mb-4">Create New Proposal</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-400 mb-1">Action</label>
+          <select
+            value={action}
+            onChange={(e) => setAction(e.target.value as ActionType)}
+            className="input"
+          >
+            {Object.values(ActionType).map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
+        </div>
+
+        {action === ActionType.Transaction && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-1">Recipient Address</label>
+              <input 
+                type="text" 
+                placeholder="0x..." 
+                className="input"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-1">ETH Value</label>
+              <input 
+                type="text" 
+                placeholder="0.1" 
+                className="input"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-1">Call Data (optional)</label>
+              <input 
+                type="text" 
+                placeholder="0x..." 
+                className="input"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+              />
+            </div>
+          </>
+        )}
+
+        {(action === ActionType.AddOwner || action === ActionType.RemoveOwner) && (
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">
+              {action === ActionType.AddOwner ? 'Address to Add' : 'Address to Remove'}
+            </label>
+            <input
+              type="text"
+              placeholder="0x..."
+              className="input"
+              value={manageAddr}
+              onChange={(e) => setManageAddr(e.target.value)}
+              required
+            />
+          </div>
+        )}
+
+        {action === ActionType.ChangeThreshold && (
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">New Threshold</label>
+            <input
+              type="number"
+              min="1"
+              placeholder="2"
+              className="input"
+              value={newThreshold}
+              onChange={(e) => setNewThreshold(e.target.value)}
+              required
+            />
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={`btn-primary w-full py-3 ${loading ? 'opacity-70' : ''}`}
         >
-          {Object.values(ActionType).map((a) => (
-            <option key={a} value={a}>{a}</option>
-          ))}
-        </select>
-      </label>
-
-      {action === ActionType.Transaction && (
-        <>
-          <input type="text" placeholder="Recipient Address" className="input" value={to} onChange={(e) => setTo(e.target.value)} required />
-          <input type="text" placeholder="ETH Value" className="input" value={value} onChange={(e) => setValue(e.target.value)} required />
-          <input type="text" placeholder="Call data (hex, optional)" className="input" value={data} onChange={(e) => setData(e.target.value)} />
-        </>
-      )}
-
-      {(action === ActionType.AddOwner || action === ActionType.RemoveOwner) && (
-        <input
-          type="text"
-          placeholder={action === ActionType.AddOwner ? 'Address to add' : 'Address to remove'}
-          className="input"
-          value={manageAddr}
-          onChange={(e) => setManageAddr(e.target.value)}
-          required
-        />
-      )}
-
-      {action === ActionType.ChangeThreshold && (
-        <input
-          type="number"
-          min="1"
-          placeholder="New Threshold"
-          className="input"
-          value={newThreshold}
-          onChange={(e) => setNewThreshold(e.target.value)}
-          required
-        />
-      )}
-
-      <button type="submit" disabled={loading} className={`btn-primary ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}>
-        {loading ? 'Submitting…' : 'Submit'}
-      </button>
-    </form>
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Processing...
+            </span>
+          ) : (
+            'Submit Proposal'
+          )}
+        </button>
+      </form>
+    </div>
   )
 }

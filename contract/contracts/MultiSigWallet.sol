@@ -22,7 +22,8 @@ contract MultiSigWallet {
     address[] public owners;
     mapping(address => bool) public isOwner;
     uint256 public threshold;
-    address public aiOracle;
+    address public immutable aiOracle;
+    bool private locked;
 
     struct Proposal {
         address proposer;
@@ -33,6 +34,7 @@ contract MultiSigWallet {
         bool executed;
         bool cancelled;
         uint8 aiRiskScore;
+        uint256 createdAt;
     }
 
     Proposal[] public proposals;
@@ -64,35 +66,47 @@ contract MultiSigWallet {
         _;
     }
 
-    /* ===== Constructor (No Params) ===== */
+    modifier nonReentrant() {
+        require(!locked, "Reentrant call");
+        locked = true;
+        _;
+        locked = false;
+    }
+
+    modifier onlySelf() {
+        require(msg.sender == address(this), "Caller is not the contract itself");
+        _;
+    }
+
+    /* ===== Constructor ===== */
     constructor() {
-        // Hardcoded initial owners
-        address[3] memory ownerList = [
+        // Hardcoded values
+        address[3] memory initialOwners = [
             0x6631775F2323DaB6DF571c6Aa49b0cC2A41721bc,
             0xaF3Cb2F439629b99B8401E1691a652c4564a610b,
             0x1d19F53854557C266CDCcA89314DD3f224affd0d
         ];
-        uint256 t = 2;
+        uint256 _threshold = 2;
         address oracle = 0x6631775F2323DaB6DF571c6Aa49b0cC2A41721bc;
 
-        require(t > 0 && t <= ownerList.length, "Invalid threshold");
+        require(_threshold > 0 && _threshold <= initialOwners.length, "Invalid threshold");
         require(oracle != address(0), "Invalid oracle");
-
-        for (uint i = 0; i < ownerList.length; i++) {
-            address o = ownerList[i];
+        
+        for (uint i = 0; i < initialOwners.length; i++) {
+            address o = initialOwners[i];
             require(o != address(0) && !isOwner[o], "Bad owner");
             isOwner[o] = true;
             owners.push(o);
         }
-
-        threshold = t;
+        
+        threshold = _threshold;
         aiOracle = oracle;
     }
 
     receive() external payable {}
     fallback() external payable {}
 
-    /* ===== View ===== */
+    /* ===== View Functions ===== */
     function getOwners() external view returns (address[] memory) {
         return owners;
     }
@@ -116,7 +130,8 @@ contract MultiSigWallet {
             uint256 confirmations,
             bool executed,
             bool cancelled,
-            uint8 aiRiskScore
+            uint8 aiRiskScore,
+            uint256 createdAt
         )
     {
         Proposal storage p = proposals[id];
@@ -128,7 +143,8 @@ contract MultiSigWallet {
             p.confirmations,
             p.executed,
             p.cancelled,
-            p.aiRiskScore
+            p.aiRiskScore,
+            p.createdAt
         );
     }
 
@@ -151,7 +167,8 @@ contract MultiSigWallet {
                 confirmations: 0,
                 executed: false,
                 cancelled: false,
-                aiRiskScore: 0
+                aiRiskScore: 0,
+                createdAt: block.timestamp
             })
         );
 
@@ -162,7 +179,7 @@ contract MultiSigWallet {
         return pid;
     }
 
-    /* ===== Nomination (public, no auto-confirm) ===== */
+    /* ===== Nomination ===== */
     function nominateOwner(address nominee) external returns (uint256) {
         require(nominee != address(0), "Zero nominee");
 
@@ -177,7 +194,8 @@ contract MultiSigWallet {
                 confirmations: 0,
                 executed: false,
                 cancelled: false,
-                aiRiskScore: 0
+                aiRiskScore: 0,
+                createdAt: block.timestamp
             })
         );
 
@@ -207,32 +225,38 @@ contract MultiSigWallet {
     /* ===== Execution ===== */
     function execute(uint256 id)
         external
+        onlyOwner
+        nonReentrant
         exists(id)
         notExecuted(id)
         notCancelled(id)
     {
-        require(isOwner[msg.sender], "Not an owner");
-
         Proposal storage p = proposals[id];
+        
+        // Ensure minimum time has passed (prevents front-running)
+        require(block.timestamp >= p.createdAt + 30 seconds, "Cooldown period");
+        
         uint256 required = p.aiRiskScore >= 5 ? threshold + 2 : threshold;
         require(p.confirmations >= required, "Insufficient confirmations");
 
         p.executed = true;
 
         (bool success, ) = p.to.call{value: p.value}(p.data);
+        require(success, "Execution failed");
         emit TransactionExecuted(id, msg.sender, success);
     }
 
     /* ===== Cancellation ===== */
     function cancel(uint256 id)
         external
-        onlyOwner
         exists(id)
         notExecuted(id)
         notCancelled(id)
     {
         Proposal storage p = proposals[id];
-        require(msg.sender == p.proposer || isOwner[msg.sender], "Not proposer or owner");
+        if (msg.sender != p.proposer) {
+            require(p.confirmations >= threshold, "Threshold not met for other-owner cancel");
+        }
         p.cancelled = true;
         emit ProposalCancelled(id);
     }
@@ -243,19 +267,20 @@ contract MultiSigWallet {
         onlyAIOracle
         exists(id)
     {
+        require(score <= 10, "Score too high");
         proposals[id].aiRiskScore = score;
         emit RiskScoreSubmitted(id, score);
     }
 
-    /* ===== Owner Management (NO access restriction, secured via execute flow) ===== */
-    function addOwner(address newOwner) external {
+    /* ===== Owner Management ===== */
+    function addOwner(address newOwner) external onlySelf {
         require(newOwner != address(0) && !isOwner[newOwner], "Bad new owner");
         isOwner[newOwner] = true;
         owners.push(newOwner);
         emit OwnerAdded(newOwner);
     }
 
-    function removeOwner(address ownerToRemove) external {
+    function removeOwner(address ownerToRemove) external onlySelf {
         require(isOwner[ownerToRemove], "Not an owner");
         isOwner[ownerToRemove] = false;
 
@@ -275,7 +300,7 @@ contract MultiSigWallet {
         emit OwnerRemoved(ownerToRemove);
     }
 
-    function changeThreshold(uint256 newThreshold) external {
+    function changeThreshold(uint256 newThreshold) external onlySelf {
         require(newThreshold > 0 && newThreshold <= owners.length, "Bad threshold");
         threshold = newThreshold;
         emit ThresholdChanged(newThreshold);
