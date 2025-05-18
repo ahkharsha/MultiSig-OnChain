@@ -30,7 +30,12 @@ type Proposal = {
   aiRiskScore: number
   confirmed: boolean
   isNomination: boolean
+  isRemoveOwner: boolean
+  isChangeThreshold: boolean
   requiredConfirmations: number
+  proposalType: 'Transaction' | 'Add Owner' | 'Remove Owner' | 'Change Threshold'
+  targetAddress?: string
+  newThreshold?: number
 }
 
 export default function ProposalList() {
@@ -57,6 +62,8 @@ export default function ProposalList() {
       setThreshold(thresholdValue)
 
       const addOwnerSig = iface.getFunction('addOwner(address)')!.selector
+      const removeOwnerSig = iface.getFunction('removeOwner(address)')!.selector
+      const changeThresholdSig = iface.getFunction('changeThreshold(uint256)')!.selector
 
       const all: Proposal[] = []
       for (let i = 0; i < total; i++) {
@@ -64,8 +71,27 @@ export default function ProposalList() {
         const confirmed = await contract.isConfirmed(i, address)
         const [proposer, to, value, data, confs, exec, canc, risk] = raw
 
-        const isNomination = to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() &&
+        const isAddOwner = to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() && 
           data.startsWith(addOwnerSig)
+        const isRemoveOwner = to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() && 
+          data.startsWith(removeOwnerSig)
+        const isChangeThreshold = to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() && 
+          data.startsWith(changeThresholdSig)
+
+        let proposalType: Proposal['proposalType'] = 'Transaction'
+        let targetAddress: string | undefined
+        let newThreshold: number | undefined
+
+        if (isAddOwner) {
+          proposalType = 'Add Owner'
+          targetAddress = '0x' + data.slice(-40)
+        } else if (isRemoveOwner) {
+          proposalType = 'Remove Owner'
+          targetAddress = '0x' + data.slice(-40)
+        } else if (isChangeThreshold) {
+          proposalType = 'Change Threshold'
+          newThreshold = parseInt(data.slice(-64), 16)
+        }
 
         all.push({
           id: i,
@@ -78,10 +104,15 @@ export default function ProposalList() {
           cancelled: canc,
           aiRiskScore: risk,
           confirmed,
-          isNomination,
-          requiredConfirmations: isNomination
+          isNomination: isAddOwner,
+          isRemoveOwner,
+          isChangeThreshold,
+          requiredConfirmations: isAddOwner || isRemoveOwner || isChangeThreshold
             ? thresholdValue
-            : risk >= 5 ? thresholdValue + 2 : thresholdValue
+            : risk >= 5 ? thresholdValue + 2 : thresholdValue,
+          proposalType,
+          targetAddress,
+          newThreshold
         })
       }
 
@@ -251,12 +282,7 @@ export default function ProposalList() {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-medium text-white">
-              Proposal #{p.id}{' '}
-              {p.isNomination && (
-                <span className="inline-block bg-[#FF4320]/10 text-[#FF4320] text-xs px-2 py-1 rounded-full ml-2">
-                  Nomination
-                </span>
-              )}
+              Proposal #{p.id} - {p.proposalType}{' '}
               {p.aiRiskScore >= 5 && (
                 <span className="inline-block bg-red-500/10 text-red-400 text-xs px-2 py-1 rounded-full ml-2">
                   High Risk
@@ -276,12 +302,25 @@ export default function ProposalList() {
         </div>
 
         <div className="mt-4 space-y-2">
-          {p.isNomination ? (
+          {p.proposalType === 'Add Owner' && (
             <p className="text-sm">
-              <span className="text-gray-400">Nominee:</span>{' '}
-              <span className="font-mono text-white">{shortenAddress('0x' + p.data.slice(-40))}</span>
+              <span className="text-gray-400">To Add:</span>{' '}
+              <span className="font-mono text-white">{shortenAddress(p.targetAddress!)}</span>
             </p>
-          ) : (
+          )}
+          {p.proposalType === 'Remove Owner' && (
+            <p className="text-sm">
+              <span className="text-gray-400">To Remove:</span>{' '}
+              <span className="font-mono text-white">{shortenAddress(p.targetAddress!)}</span>
+            </p>
+          )}
+          {p.proposalType === 'Change Threshold' && (
+            <p className="text-sm">
+              <span className="text-gray-400">New Threshold:</span>{' '}
+              <span className="font-mono text-white">{p.newThreshold}</span>
+            </p>
+          )}
+          {p.proposalType === 'Transaction' && (
             <>
               <p className="text-sm">
                 <span className="text-gray-400">Recipient:</span>{' '}
@@ -408,7 +447,7 @@ export default function ProposalList() {
     <div className="space-y-6">
       {renderProposalSection('Active Proposals', active, 'active')}
       {renderProposalSection('Completed Proposals', completed, 'completed')}
-      {renderProposalSection('Cancelled/Rejected Proposals', cancelled, 'cancelled')}
+      {renderProposalSection('Cancelled Proposals', cancelled, 'cancelled')}
     </div>
   )
 }
