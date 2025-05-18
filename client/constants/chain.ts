@@ -21,7 +21,7 @@ export const SUPPORTED_CHAINS = {
 } as const;
 
 // Define your default chain here (ONLY CHANGE THIS LINE)
-export const DEFAULT_CHAIN_NAME: keyof typeof SUPPORTED_CHAINS = 'flowTestnet';
+export const DEFAULT_CHAIN_NAME: keyof typeof SUPPORTED_CHAINS = 'arbitrumSepolia';
 
 // Derived values
 export const DEFAULT_CHAIN = SUPPORTED_CHAINS[DEFAULT_CHAIN_NAME];

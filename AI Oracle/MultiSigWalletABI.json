@@ -1,7 +1,23 @@
 {
   "abi": [
     {
-      "inputs": [],
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "initialOwners",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_threshold",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "oracle",
+          "type": "address"
+        }
+      ],
       "stateMutability": "nonpayable",
       "type": "constructor"
     },
@@ -325,6 +341,11 @@
           "internalType": "uint8",
           "name": "aiRiskScore",
           "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -486,6 +507,11 @@
           "internalType": "uint8",
           "name": "aiRiskScore",
           "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "createdAt",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
