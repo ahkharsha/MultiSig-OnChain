@@ -408,7 +408,7 @@ export default function ProposalList() {
     <div className="space-y-6">
       {renderProposalSection('Active Proposals', active, 'active')}
       {renderProposalSection('Completed Proposals', completed, 'completed')}
-      {renderProposalSection('Cancelled Proposals', cancelled, 'cancelled')}
+      {renderProposalSection('Cancelled/Rejected Proposals', cancelled, 'cancelled')}
     </div>
   )
 }

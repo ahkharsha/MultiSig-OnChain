@@ -79,26 +79,24 @@ contract MultiSigWallet {
     }
 
     /* ===== Constructor ===== */
-    constructor() {
-        // Hardcoded values
-        address[3] memory initialOwners = [
-            0x6631775F2323DaB6DF571c6Aa49b0cC2A41721bc,
-            0xaF3Cb2F439629b99B8401E1691a652c4564a610b,
-            0x1d19F53854557C266CDCcA89314DD3f224affd0d
-        ];
-        uint256 _threshold = 2;
-        address oracle = 0x6631775F2323DaB6DF571c6Aa49b0cC2A41721bc;
+    constructor(
+        address[] calldata initialOwners,
+        uint256 _threshold,
+        address oracle
+    ) {
+        require(_threshold > 0, "Threshold must be > 0");
+        require(_threshold <= initialOwners.length, "Threshold exceeds owner count");
+        require(oracle != address(0), "Invalid oracle address");
 
-        require(_threshold > 0 && _threshold <= initialOwners.length, "Invalid threshold");
-        require(oracle != address(0), "Invalid oracle");
-        
         for (uint i = 0; i < initialOwners.length; i++) {
-            address o = initialOwners[i];
-            require(o != address(0) && !isOwner[o], "Bad owner");
-            isOwner[o] = true;
-            owners.push(o);
+            address owner = initialOwners[i];
+            require(owner != address(0), "Zero address owner");
+            require(!isOwner[owner], "Duplicate owner detected");
+            
+            isOwner[owner] = true;
+            owners.push(owner);
         }
-        
+
         threshold = _threshold;
         aiOracle = oracle;
     }

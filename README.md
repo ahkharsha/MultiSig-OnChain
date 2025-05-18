@@ -1,181 +1,106 @@
 # 🛡️ MultiSig Wallet dApp - Built for OnChain Island 🏝️ Selection Task
 
-A fully on-chain, AI-aware, dynamic Multi-Signature Wallet built with ❤️ using Solidity, Next.js, Ethers.js, and Tailwind CSS.
-
-> 🔐 Built for the OnChain Island Selection Task.
-> ✨ Everything is on-chain. Dynamic. Clean. Fast. Smart.
-
----
-
-## 🌐 Live Demo
-
-🔗 [https://multisig-task-onchain.vercel.app](https://multisig-task-onchain.vercel.app)
-
-📦 Contract Address:
-[0x6A6D5dFFA62AE1423FaeD3effEd8F50aa190a129](https://sepolia.arbiscan.io/address/0x6A6D5dFFA62AE1423FaeD3effEd8F50aa190a129)
-
-Network: Arbitrum Sepolia
+**A Minimal Viable Guardian**  
+Secure multi-signature wallet dApp built for granny-friendly on-chain governance  
+*"Because even Granny deserves secure DeFi"*  
 
 ---
 
-## 📸 Preview
+## 🚀 Quick Links  
 
-### 🧠 Dashboard
-
-![Dashboard Preview](assets/dashboard-preview.png)
-
-### 🔐 Connect Wallet
-
-![Connect Wallet](assets/connect-wallet.png)
-
-### 🧾 Create Proposal
-
-![Create Proposal](assets/create-proposal.png)
-
-### ✅ Confirm & Execute
-
-![Confirm & Execute](assets/confirm-execute.png)
-
-### ❌ Cancelled Proposals
-
-![Cancelled Proposals](assets/cancelled.png)
+- **Live Demo**: [multisig-task-onchain.vercel.app](https://multisig-task-onchain.vercel.app)  
+- **Contract**: [0x6A6D5dFFA62AE1423FaeD3effEd8F50aa190a129](https://sepolia.arbiscan.io/address/0x6A6D5dFFA62AE1423FaeD3effEd8F50aa190a129) (Arbitrum Sepolia)  
+- **GitHub Repo**: [github.com/ahkharsha/MultiSig-OnChain](https://github.com/ahkharsha/MultiSig-OnChain)  
 
 ---
 
-## 🚀 Features
+## 👀 UI Preview  
 
-* 🔐 Multi-signature Wallet (M-of-N)
-* 🧠 AI Risk Score integration (Upcoming)
-* 👤 Owner Nomination for new users
-* 📜 Proposals for:
+| Dashboard | Connect Wallet | Create Proposal |  
+|-----------|----------------|-----------------|  
+| ![Dashboard Preview]() | ![Connect Wallet]() | ![Create Proposal]() |  
 
-  * ETH Transfers
-  * addOwner / removeOwner
-  * changeThreshold
-* ⛓️ On-chain Confirm / Execute / Cancel
-* 🧠 High Risk Proposals (AI Score ≥ 5) → threshold + 2 confirmations
-* ⚡ Real-time UI with:
-
-  * Ethereum Event Listeners
-  * Client-side Custom Events
-* ✨ Beautiful responsive UI (Tailwind CSS)
-* 🔔 Toast notifications for all actions
+| Confirm Execute | Cancelled Proposals | Mobile View |  
+|-----------------|---------------------|-------------|  
+| ![Confirm Execute]() | ![Cancelled]() | ![Mobile]() |  
 
 ---
 
-## 🏗️ Architecture
+## 🛡️ Core Features  
 
-![Architecture Diagram](assets/architecture-diagram.png)
+✅ **Granny-Proof Security**  
+- 3-of-N approval system (trusted family members)  
+- Suspicious activity detection (AI risk scoring)  
+- One-click emergency cancellation  
 
-* Smart Contract: Solidity (0.8.x)
-* Frontend: Next.js + App Router
-* Ethereum Interaction: ethers.js
-* Chain: Arbitrum Sepolia
-* Libraries: Tailwind CSS, react-hot-toast
+✅ **Simple Governance**  
+- Propose ETH transfers  
+- Add/remove family members  
+- Change approval policies  
 
----
-
-## 🧠 Smart Contract Overview
-
-* Owners tracked via both array + mapping
-* Proposals contain:
-
-  * to address
-  * value
-  * calldata
-  * executed/cancelled flags
-  * confirmations
-  * AI risk score
-* AI Oracle address submits risk score
-* All governance flows must go through:
-  ➕ propose → ✅ confirm → 🛠️ execute
-
-✅ Internal governance functions like addOwner/removeOwner have no onlyOwner — access controlled via proposal execution
+✅ **Real-Time Updates**  
+- Live proposal tracking  
+- Instant confirmation alerts  
+- Automatic threshold adjustment  
 
 ---
 
-## 📱 UI Walkthrough
+## 🧑💻 Local Setup  
 
-* ✅ Connects to MetaMask
-* 👀 Detects if connected user is an owner
-* 🙋‍♂️ If not owner → Show “Nominate Yourself”
-* 📜 Create Proposal:
+1. **Clone Repository**  
+   `git clone https://github.com/ahkharsha/MultiSig-OnChain.git`  
 
-  * ETH transfer
-  * addOwner / removeOwner
-  * changeThreshold
-* 🗳️ Confirm proposals
-* 🛠️ Execute when confirmations reached
-* ❌ Cancel proposals
-* ✅ Auto-grouped into Active, Completed, and Cancelled lists
-
----
-
-## 📦 Run Locally
-
-1. Clone the repo:
-
-   git clone [https://github.com/ahkharsha/multisig-onchain.git](https://github.com/your-username/multisig-onchain.git)
-
-2. Install dependencies:
-
-   cd multisig-onchain
-   cd client
+2. **Install Dependencies**  
+   ```bash
+   cd MultiSig-OnChain/client
    npm install
+   ```
 
-4. Start dev server:
-
+3. **Run Development Server**  
+   ```bash
    npm run dev
+   ```
 
-Update contract address and ABI in:
-
-* /client/constants/contract.ts
-* /client/abis/MultiSigWallet.json
-
----
-
-## 💻 Tech Stack
-
-* 🧠 Solidity
-* ⚛️ React / Next.js App Router
-* 🦄 ethers.js
-* 🍞 react-hot-toast
-* 🌐 Tailwind CSS
-* 🧠 AI Oracle-ready integration
+4. **Access**  
+   Open `http://localhost:3000` in browser  
 
 ---
 
-## 🧠 Team — Granny Lovers 3000 🧓🚀
+## 🏗️ Architecture  
 
-| Name              | Role               | 
-| ----------------- | ------------------ | 
-| A Harsha Kumar    | Team Lead, Web3    |
-| Harisankar R Nair | Web3               |
-| Reeve C Jack      | Frontend Developer |
-| Duane             | UI/UX & Frontend   |
+**Smart Contract**  
+- Solidity 0.8.20  
+- Multi-sig logic with AI integration hooks  
+- Gas-optimized operations  
 
----
+**Frontend**  
+- Next.js 14 App Router  
+- Tailwind CSS + Shadcn UI  
+- WalletConnect integration  
 
-## 📸 Image Assets to Add
-
-Place these in the /assets folder:
-
-* dashboard-preview\.png
-* connect-wallet.png
-* create-proposal.png
-* confirm-execute.png
-* cancelled.png
-* architecture-diagram.png
+**AI Integration**  
+- Risk scoring system  
+- Threshold auto-adjustment  
+- Oracle-ready design  
 
 ---
 
-## 📜 License
+## Team CryptoVenture Innovators
 
-This project is licensed under the MIT License.
-View the [License](https://github.com/ahkharsha/MultiSig-OnChain/blob/main/LICENSE) file for more details.
+| Role | Member | Contribution |  
+|------|--------|--------------|  
+| **Team Lead** | A Harsha Kumar | Smart Contracts & Web3 |  
+| **UI Wizard** | Harisankar R Nair | Frontend Development |  
+| **Safety Expert** | Reeve C Jack | Proposal Logic |  
+| **UX Translator** | Duane | Granny-Friendly Design |  
 
 ---
 
-Made with ☕, ❤️, and sleepless nights
-For OnChain Island 🏝️ by Granny Lovers 3000
-Let's bring Grannys OnChain 🚀
+## 📜 License  
+
+[MIT Licensed](https://github.com/ahkharsha/MultiSig-OnChain/blob/main/LICENSE) - Because Grannys believe in sharing (with proper permission!)  
+
+---
+
+🏝️ Built for **OnChain Island** with ❤️  
+*"Let's bring Grannys OnChain"*  
