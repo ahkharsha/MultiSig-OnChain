@@ -1,4 +1,3 @@
-// components/ConnectWalletButton.tsx
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -19,7 +18,7 @@ export default function ConnectWalletButton() {
       if (!isCorrectChain) {
         await switchChain()
       }
-      router.push('/home')
+      // Removed automatic navigation - page will reload from WalletContext
     } catch (err) {
       console.error('Error connecting wallet:', err)
     }

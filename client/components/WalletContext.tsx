@@ -1,4 +1,3 @@
-// components/WalletContext.tsx
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
@@ -17,6 +16,7 @@ interface WalletContextType {
   provider: ethers.BrowserProvider | null
   signer: ethers.Signer | null
   chainId: number | null
+  chainName: string | null
   targetChain: typeof DEFAULT_CHAIN
   switchChain: () => Promise<void>
   isCorrectChain: boolean
@@ -29,9 +29,15 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null)
   const [signer, setSigner] = useState<ethers.Signer | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
+  const [chainName, setChainName] = useState<string | null>(null)
   
   const targetChain = DEFAULT_CHAIN
   const isCorrectChain = chainId === targetChain.id
+
+  // Force refresh the page when chain or account changes
+  const handleChainOrAccountChange = () => {
+    window.location.reload()
+  }
 
   const switchChain = async () => {
     if (!window.ethereum) {
@@ -50,32 +56,26 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${targetChain.id.toString(16)}` }],
       })
+      // DON'T navigate automatically - let the reload handler take care of it
     } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to MetaMask
       if (switchError.code === 4902) {
         try {
-          const userConfirmed = confirm(
-            `Would you like to add ${targetChain.name} to your wallet?`
-          )
-          
-          if (userConfirmed) {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: `0x${targetChain.id.toString(16)}`,
-                  chainName: targetChain.name,
-                  nativeCurrency: {
-                    name: 'ETH',
-                    symbol: 'ETH',
-                    decimals: 18,
-                  },
-                  rpcUrls: [targetChain.rpcUrl],
-                  blockExplorerUrls: [targetChain.explorerUrl],
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: `0x${targetChain.id.toString(16)}`,
+                chainName: targetChain.name,
+                nativeCurrency: {
+                  name: 'ETH',
+                  symbol: 'ETH',
+                  decimals: 18,
                 },
-              ],
-            })
-          }
+                rpcUrls: [targetChain.rpcUrl],
+                blockExplorerUrls: [targetChain.explorerUrl],
+              },
+            ],
+          })
         } catch (addError) {
           console.error('Error adding chain:', addError)
           toast.error('Failed to add network', {
@@ -99,29 +99,26 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const handleAccountsChanged = (accounts: string[]) => {
-    if (accounts.length === 0) {
-      setAddress(null)
-      setSigner(null)
-    } else {
-      setAddress(accounts[0])
-    }
-  }
-
-  const handleChainChanged = (chainIdHex: string) => {
-    const chainId = parseInt(chainIdHex, 16)
-    setChainId(chainId)
-  }
-
   const connect = async () => {
     if (!window.ethereum) return
 
     const provider = new ethers.BrowserProvider(window.ethereum)
     setProvider(provider)
 
-    // Get current chain ID
+    // Get current chain info
     const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' })
-    handleChainChanged(chainIdHex)
+    const chainId = parseInt(chainIdHex, 16)
+    setChainId(chainId)
+    
+    try {
+      const chainName = await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{ chainId: chainIdHex }]
+      }).then(() => null, () => null) || `Chain ${chainId}`
+      setChainName(chainName)
+    } catch {
+      setChainName(`Chain ${chainId}`)
+    }
 
     // Get accounts if already connected
     const accounts = await window.ethereum.request({ method: 'eth_accounts' })
@@ -132,8 +129,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     // Set up event listeners
-    window.ethereum.on('accountsChanged', handleAccountsChanged)
-    window.ethereum.on('chainChanged', handleChainChanged)
+    window.ethereum.on('accountsChanged', handleChainOrAccountChange)
+    window.ethereum.on('chainChanged', handleChainOrAccountChange)
   }
 
   useEffect(() => {
@@ -143,8 +140,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => {
       if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged)
-        window.ethereum.removeListener('chainChanged', handleChainChanged)
+        window.ethereum.removeListener('accountsChanged', handleChainOrAccountChange)
+        window.ethereum.removeListener('chainChanged', handleChainOrAccountChange)
       }
     }
   }, [])
@@ -155,6 +152,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       provider, 
       signer, 
       chainId,
+      chainName,
       targetChain,
       switchChain,
       isCorrectChain

@@ -145,7 +145,7 @@ export default function ProposalList() {
   }
 
   const doConfirm = async (id: number) => {
-    if (!signer) return toast.error('Not connected', {
+    if (!signer) return toast.error('Wallet not connected', {
       style: {
         background: '#1A1A1A',
         color: '#FFFFFF',
@@ -178,7 +178,7 @@ export default function ProposalList() {
   }
 
   const doExecute = async (p: Proposal) => {
-    if (!signer) return toast.error('Not connected', {
+    if (!signer) return toast.error('Wallet not connected', {
       style: {
         background: '#1A1A1A',
         color: '#FFFFFF',
@@ -212,7 +212,7 @@ export default function ProposalList() {
   }
 
   const doCancel = async (id: number) => {
-    if (!signer) return toast.error('Not connected', {
+    if (!signer) return toast.error('Wallet not connected', {
       style: {
         background: '#1A1A1A',
         color: '#FFFFFF',

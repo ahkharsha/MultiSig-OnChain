@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
-  const { address, isCorrectChain, targetChain, chainId } = useWallet()
+  const { address, isCorrectChain, targetChain, chainName } = useWallet()
   const pathname = usePathname()
 
   const navLinks = [
@@ -13,17 +13,6 @@ export default function Header() {
     { name: 'Create Proposal', href: '/home#create', show: address && isCorrectChain },
     { name: 'Active Proposals', href: '/home#proposals', show: address && isCorrectChain },
   ]
-
-  // Chain display configuration
-  const getChainName = (chainId: number | null) => {
-    switch(chainId) {
-      case 421614: return 'Arbitrum Sepolia'
-      case 80002: return 'Polygon Amoy'
-      case 1: return 'Ethereum'
-      case 11155111: return 'Sepolia'
-      default: return chainId ? `Chain ${chainId}` : 'Disconnected'
-    }
-  }
 
   return (
     <header className="bg-[#1A1A1A] border-b border-[#2A2A2A] sticky top-0 z-10">
@@ -66,7 +55,7 @@ export default function Header() {
               }`}>
                 <span className="text-gray-400">Network: </span>
                 <span className="font-medium">
-                  {getChainName(chainId)}
+                  {chainName || 'Loading...'}
                 </span>
               </div>
             </div>
@@ -81,7 +70,7 @@ export default function Header() {
         )}
       </div>
 
-      {/* Mobile Navigation - Added chain info */}
+      {/* Mobile Navigation */}
       {address && (
         <div className="md:hidden border-t border-[#2A2A2A]">
           <div className="flex justify-between items-center px-4 py-2">
@@ -90,7 +79,7 @@ export default function Header() {
                 ? 'bg-green-500/10 text-green-400' 
                 : 'bg-red-500/10 text-red-400'
             }`}>
-              Network: {getChainName(chainId)}
+              Network: {chainName || 'Loading...'}
             </div>
             
             {isCorrectChain && (
