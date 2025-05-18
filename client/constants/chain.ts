@@ -17,11 +17,17 @@ export const SUPPORTED_CHAINS = {
     name: 'Flow EVM Testnet',
     rpcUrl: 'https://testnet.evm.nodes.onflow.org',
     explorerUrl: 'https://testnet.flowdiver.io/'
+  },
+  ethereumSepolia: {
+    id: 11155111,
+    name: 'Sepolia',
+    rpcUrl: 'https://rpc.sepolia.org',
+    explorerUrl: 'https://sepolia.etherscan.io/'
   }
 } as const;
 
 // Define your default chain here (ONLY CHANGE THIS LINE)
-export const DEFAULT_CHAIN_NAME: keyof typeof SUPPORTED_CHAINS = 'arbitrumSepolia';
+export const DEFAULT_CHAIN_NAME: keyof typeof SUPPORTED_CHAINS = 'ethereumSepolia';
 
 // Derived values
 export const DEFAULT_CHAIN = SUPPORTED_CHAINS[DEFAULT_CHAIN_NAME];

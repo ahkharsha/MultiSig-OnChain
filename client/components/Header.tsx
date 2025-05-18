@@ -1,4 +1,3 @@
-// components/Header.tsx
 'use client'
 
 import { useWallet } from './WalletContext'
@@ -6,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
-  const { address, isCorrectChain, targetChain } = useWallet()
+  const { address, isCorrectChain, targetChain, chainId } = useWallet()
   const pathname = usePathname()
 
   const navLinks = [
@@ -14,6 +13,17 @@ export default function Header() {
     { name: 'Create Proposal', href: '/home#create', show: address && isCorrectChain },
     { name: 'Active Proposals', href: '/home#proposals', show: address && isCorrectChain },
   ]
+
+  // Chain display configuration
+  const getChainName = (chainId: number | null) => {
+    switch(chainId) {
+      case 421614: return 'Arbitrum Sepolia'
+      case 80002: return 'Polygon Amoy'
+      case 1: return 'Ethereum'
+      case 11155111: return 'Sepolia'
+      default: return chainId ? `Chain ${chainId}` : 'Disconnected'
+    }
+  }
 
   return (
     <header className="bg-[#1A1A1A] border-b border-[#2A2A2A] sticky top-0 z-10">
@@ -48,11 +58,19 @@ export default function Header() {
         
         {address && (
           <div className="flex items-center space-x-4">
-            {!isCorrectChain && (
-              <div className="px-3 py-1.5 bg-red-500/10 text-red-400 rounded-lg text-sm">
-                Wrong Network
+            <div className="hidden sm:flex items-center space-x-2">
+              <div className={`px-3 py-1.5 rounded-lg text-sm ${
+                isCorrectChain 
+                  ? 'bg-green-500/10 text-green-400' 
+                  : 'bg-red-500/10 text-red-400'
+              }`}>
+                <span className="text-gray-400">Network: </span>
+                <span className="font-medium">
+                  {getChainName(chainId)}
+                </span>
               </div>
-            )}
+            </div>
+            
             <div className="px-3 py-1.5 bg-[#2A2A2A] rounded-lg text-sm">
               <span className="text-gray-400">Connected: </span>
               <span className="font-mono text-white">
@@ -63,26 +81,38 @@ export default function Header() {
         )}
       </div>
 
-      {/* Mobile Navigation */}
-      {address && isCorrectChain && (
+      {/* Mobile Navigation - Added chain info */}
+      {address && (
         <div className="md:hidden border-t border-[#2A2A2A]">
-          <nav className="flex justify-around py-2">
-            {navLinks.map((link) => (
-              link.show && (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`px-3 py-2 text-xs font-medium transition-colors ${
-                    pathname === link.href.split('#')[0]
-                      ? 'text-[#FF4320]'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              )
-            ))}
-          </nav>
+          <div className="flex justify-between items-center px-4 py-2">
+            <div className={`px-2 py-1 rounded text-xs ${
+              isCorrectChain 
+                ? 'bg-green-500/10 text-green-400' 
+                : 'bg-red-500/10 text-red-400'
+            }`}>
+              Network: {getChainName(chainId)}
+            </div>
+            
+            {isCorrectChain && (
+              <nav className="flex space-x-4">
+                {navLinks.map((link) => (
+                  link.show && (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={`text-xs font-medium transition-colors ${
+                        pathname === link.href.split('#')[0]
+                          ? 'text-[#FF4320]'
+                          : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  )
+                ))}
+              </nav>
+            )}
+          </div>
         </div>
       )}
     </header>
