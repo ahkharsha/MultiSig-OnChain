@@ -4,9 +4,8 @@
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/ahkharsha/MediFlow)
 [![LinkedIn](https://img.shields.io/badge/Connect-LinkedIn-blue)](https://www.linkedin.com/in/harsha-kumar-a-271a76203/)
 
-<img src="https://github.com/user-attachments/assets/52c06c37-5467-4d5e-966d-4ed255f965a2" alt="logo-white" width="50"/>
+<img src="https://github.com/user-attachments/assets/f0f1b147-7476-4650-a324-2f27119e71e8" alt="logo-white" width="175"/>
 
----
 
 A Minimal Viable Guardian
 Secure multi-signature wallet dApp built for granny-friendly on-chain governance
@@ -16,15 +15,17 @@ Secure multi-signature wallet dApp built for granny-friendly on-chain governance
 
 ## 🚀 Quick Links
 
-* Live Demo: [https://multisig-task-onchain.vercel.app](https://multisig-task-onchain.vercel.app)
-* Contract: [0xA6E566b61A8596370C384C76d27485742F43e979](https://sepolia.etherscan.io/address/0xA6E566b61A8596370C384C76d27485742F43e979) (Ethereum Sepolia)
-* GitHub Repo: [https://github.com/ahkharsha/MultiSig-OnChain](https://github.com/ahkharsha/MultiSig-OnChain)
+* Live Demo: <a href="https://multisig-task-onchain.vercel.app" target="_blank" rel="noopener noreferrer">https://multisig-task-onchain.vercel.app</a>  
+* Contract: <a href="https://sepolia.etherscan.io/address/0xA6E566b61A8596370C384C76d27485742F43e979" target="_blank" rel="noopener noreferrer">0xA6E566b61A8596370C384C76d27485742F43e979</a>  
+* GitHub Repo: <a href="https://github.com/ahkharsha/MultiSig-OnChain" target="_blank" rel="noopener noreferrer">https://github.com/ahkharsha/MultiSig-OnChain</a>  
 
 ---
 
 ## 🎥 Demo Video
 
-[![Watch Demo](https://img.youtube.com/vi/pe2unzAxV0M/0.jpg)](http://youtu.be/pe2unzAxV0M)
+<a href="http://youtu.be/pe2unzAxV0M" target="_blank" rel="noopener noreferrer">
+  <img src="https://img.youtube.com/vi/pe2unzAxV0M/0.jpg" alt="Watch Demo"/>
+</a>
 
 ---
 
@@ -43,12 +44,12 @@ Secure multi-signature wallet dApp built for granny-friendly on-chain governance
   </tr>
   <tr>
     <td align="center">
-      <strong>📜 Proposal List (Active)</strong><br/>
-      <img src="https://github.com/user-attachments/assets/87c72ab0-99bc-42b2-9b53-e29859b72f2e" alt="Proposal List" width="400"/>
+      <strong>👑 Owner UI + Proposal</strong><br/>
+      <img src="https://github.com/user-attachments/assets/783db2fa-9a8b-40e5-af97-1449741754af" alt="Owner UI" width="400"/>
     </td>
     <td align="center">
-      <strong>✅ Confirmed & Cancelled Proposals</strong><br/>
-      <img src="https://github.com/user-attachments/assets/f73adcb0-0831-48c6-8f6f-0180b8bf0653" alt="Completed Proposals" width="400"/>
+      <strong>📜 Proposal List (Active)</strong><br/>
+      <img src="https://github.com/user-attachments/assets/f73adcb0-0831-48c6-8f6f-0180b8bf0653" alt="Proposal List" width="400"/>
     </td>
   </tr>
 </table>
