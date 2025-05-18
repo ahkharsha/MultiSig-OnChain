@@ -14,9 +14,9 @@ Secure multi-signature wallet dApp built for granny-friendly on-chain governance
 
 ## 🚀 Quick Links
 
-- Live Demo: <a href="https://multisig-task-onchain.vercel.app" target="_blank" rel="noopener noreferrer">https://multisig-task-onchain.vercel.app</a>  
-- Contract: <a href="https://sepolia.etherscan.io/address/0xA6E566b61A8596370C384C76d27485742F43e979" target="_blank" rel="noopener noreferrer">0xA6E566b61A8596370C384C76d27485742F43e979</a>  
-- GitHub Repo: <a href="https://github.com/ahkharsha/MultiSig-OnChain" target="_blank" rel="noopener noreferrer">https://github.com/ahkharsha/MultiSig-OnChain</a>
+- **Live Demo**: <a href="https://multisig-task-onchain.vercel.app" target="_blank" rel="noopener noreferrer">https://multisig-task-onchain.vercel.app</a>  
+- **Contract**: <a href="https://sepolia.etherscan.io/address/0xA6E566b61A8596370C384C76d27485742F43e979" target="_blank" rel="noopener noreferrer">0xA6E566b61A8596370C384C76d27485742F43e979</a> (Sepolia Testnet)
+- **GitHub Repo**: <a href="https://github.com/ahkharsha/MultiSig-OnChain" target="_blank" rel="noopener noreferrer">https://github.com/ahkharsha/MultiSig-OnChain</a>
 
 ---
 
