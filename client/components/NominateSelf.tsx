@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { useWallet } from './WalletContext'
 import contractABI from '../abis/MultiSigWallet.json'
 import { CONTRACT_ADDRESS } from '../constants/contract'
+import { FiUserPlus, FiArrowRight } from 'react-icons/fi'
 
 export default function NominateSelf() {
   const { signer, address } = useWallet()
@@ -69,17 +70,47 @@ export default function NominateSelf() {
   if (isOwner) return null
 
   return (
-    <div className="bg-[#FF4320]/10 border border-[#FF4320]/20 p-4 rounded-lg">
-      <p className="text-[#FF4320] mb-3">
-        You are not an owner yet. Nominate yourself to join the multisig!
-      </p>
-      <button
-        onClick={handleNominate}
-        disabled={loading}
-        className={`btn-secondary w-full ${loading ? 'opacity-70' : ''}`}
-      >
-        {loading ? 'Submitting...' : 'Nominate Yourself'}
-      </button>
+    <div className="bg-gradient-to-r from-[#FF4320]/10 to-[#FF914D]/10 border-2 border-[#FF4320]/30 p-6 rounded-xl shadow-lg relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute -top-2 -right-2 w-16 h-16 bg-[#FF4320]/10 rounded-full"></div>
+      <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-[#FF914D]/10 rounded-full"></div>
+      
+      <div className="relative z-10">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="p-2 bg-[#FF4320]/20 rounded-lg">
+            <FiUserPlus className="text-2xl text-[#FF4320]" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-white">Become an Owner</h3>
+            <p className="text-[#FF4320]">
+              Nominate yourself to join the multisig wallet!
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm text-gray-300">
+            As a new user, you need to be approved by existing owners to participate in governance.
+          </p>
+          <button
+            onClick={handleNominate}
+            disabled={loading}
+            className={`btn-primary w-full flex items-center justify-center gap-2 group ${loading ? 'opacity-70' : ''}`}
+          >
+            {loading ? (
+              'Submitting...'
+            ) : (
+              <>
+                Nominate Yourself
+                <FiArrowRight className="transition-transform group-hover:translate-x-1" />
+              </>
+            )}
+          </button>
+          <p className="text-xs text-gray-400 text-center">
+            Requires approval from existing owners
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

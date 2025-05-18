@@ -106,6 +106,13 @@ export default function InfoPanel() {
 
   return (
     <div className="card space-y-4">
+      {/* Moved NominateSelf to the top */}
+      {address && !owners.includes(address) && (
+        <div className="pb-4">
+          <NominateSelf />
+        </div>
+      )}
+
       <h2 className="text-xl font-semibold text-white">Multisignature Configuration</h2>
       
       <div>
@@ -135,12 +142,6 @@ export default function InfoPanel() {
           ))}
         </ul>
       </div>
-
-      {address && !owners.includes(address) && (
-        <div className="pt-2">
-          <NominateSelf />
-        </div>
-      )}
     </div>
   )
 }
