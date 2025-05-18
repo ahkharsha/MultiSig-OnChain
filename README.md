@@ -1,23 +1,22 @@
 # 🛡️ MultiSig Wallet dApp - Built for OnChain Island 🏝️ Selection Task
 
-[![Deployment Status](https://img.shields.io/badge/Deployment-Live-brightgreen)](https://medi-flow.vercel.app)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/ahkharsha/MediFlow)
+[![Deployment Status](https://img.shields.io/badge/Deployment-Live-brightgreen)](https://multisig-task-onchain.vercel.app)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/ahkharsha/MultiSig-OnChain)
 [![LinkedIn](https://img.shields.io/badge/Connect-LinkedIn-blue)](https://www.linkedin.com/in/harsha-kumar-a-271a76203/)
 
 <img src="https://github.com/user-attachments/assets/f0f1b147-7476-4650-a324-2f27119e71e8" alt="logo-white" width="175"/>
 
-
-A Minimal Viable Guardian
-Secure multi-signature wallet dApp built for granny-friendly on-chain governance
+A Minimal Viable Guardian  
+Secure multi-signature wallet dApp built for granny-friendly on-chain governance  
 "Because even Granny deserves secure DeFi"
 
 ---
 
 ## 🚀 Quick Links
 
-* Live Demo: <a href="https://multisig-task-onchain.vercel.app" target="_blank" rel="noopener noreferrer">https://multisig-task-onchain.vercel.app</a>  
-* Contract: <a href="https://sepolia.etherscan.io/address/0xA6E566b61A8596370C384C76d27485742F43e979" target="_blank" rel="noopener noreferrer">0xA6E566b61A8596370C384C76d27485742F43e979</a>  
-* GitHub Repo: <a href="https://github.com/ahkharsha/MultiSig-OnChain" target="_blank" rel="noopener noreferrer">https://github.com/ahkharsha/MultiSig-OnChain</a>  
+- Live Demo: <a href="https://multisig-task-onchain.vercel.app" target="_blank" rel="noopener noreferrer">https://multisig-task-onchain.vercel.app</a>  
+- Contract: <a href="https://sepolia.etherscan.io/address/0xA6E566b61A8596370C384C76d27485742F43e979" target="_blank" rel="noopener noreferrer">0xA6E566b61A8596370C384C76d27485742F43e979</a>  
+- GitHub Repo: <a href="https://github.com/ahkharsha/MultiSig-OnChain" target="_blank" rel="noopener noreferrer">https://github.com/ahkharsha/MultiSig-OnChain</a>
 
 ---
 
@@ -56,40 +55,40 @@ Secure multi-signature wallet dApp built for granny-friendly on-chain governance
 
 ---
 
+### 🧪 Hardhat Test Coverage
+
+<p align="center">
+  <strong>✅ 36/36 Test Cases Passed</strong><br/>
+  <img src="https://github.com/user-attachments/assets/01e4a427-b1ad-4cef-b56b-f39f84b87942" alt="Hardhat Tests Passed" width="600"/>
+</p>
+
+---
+
 ## ✅ Challenge Completion Checklist
 
 ### 🔹 Core Requirements & Features
 
-1. ✅ Initialization
+1. ✅ Initialization  
+   - Constructor takes address[] initialOwners and uint256 _threshold  
+   - Validates threshold range, checks for duplicates and zero addresses  
 
-   * Contract uses constructor with address\[] initialOwners and uint256 \_threshold
-   * Validates threshold range, ensures no duplicate/zero addresses
+2. ✅ Transaction Proposal  
+   - Only owners can propose  
+   - Stores to, value, data  
+   - Auto-confirmation by proposer  
+   - Emits ProposalCreated  
 
-2. ✅ Transaction Proposal
+3. ✅ Transaction Confirmation  
+   - Owners can confirm if not already confirmed  
+   - Emits ConfirmationAdded  
 
-   * Only registered owners can propose
-   * Stores proposal details with to, value, data
-   * Proposer auto-confirms their own proposal
-   * Emits ProposalCreated event
+4. ✅ Transaction Execution  
+   - Requires threshold confirmations  
+   - Handles execution using call  
+   - Emits TransactionExecuted  
 
-3. ✅ Transaction Confirmation
-
-   * Only owners can confirm
-   * Proposal must be active & not yet confirmed by caller
-   * Emits ConfirmationAdded event
-
-4. ✅ Transaction Execution
-
-   * Requires M-of-N confirmations
-   * Executes to.call{value: val}(data)
-   * Emits TransactionExecuted event
-
-5. ✅ View Functions
-
-   * getOwners()
-   * getThreshold()
-   * getProposal(uint256)
-   * isConfirmed(uint256, address)
+5. ✅ View Functions  
+   - getOwners(), getThreshold(), getProposal(), isConfirmed()
 
 ---
 
