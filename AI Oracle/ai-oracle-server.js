@@ -3,10 +3,10 @@ const { ethers } = require('ethers');
 const axios = require('axios');
 
 // 1. Setup Blockchain Connection
-const provider = new ethers.providers.JsonRpcProvider(process.env.BLOCKCHAIN_URL);
+const provider = new ethers.JsonRpcProvider(process.env.BLOCKCHAIN_URL);
 const wallet = new ethers.Wallet(process.env.ORACLE_PRIVATE_KEY, provider);
-const contractABI = require('./artifacts/contracts/MultiSigWallet.sol/MultiSigWallet.json').abi;
-const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, contractABI, wallet);
+const contractABI = require('./MultiSigWalletABI.json').abi;
+const contract = new ethers.Contract("0xA6E566b61A8596370C384C76d27485742F43e979", contractABI, wallet);
 
 // 2. Simple AI Risk Assessment Function (Mock)
 async function assessRisk(transactionData) {
