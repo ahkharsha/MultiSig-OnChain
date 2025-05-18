@@ -14,34 +14,93 @@ Secure multi-signature wallet dApp built for granny-friendly on-chain governance
 
 ---
 
-## 👀 UI Preview  
+## 🎥 Demo Video
 
-| Dashboard | Connect Wallet | Create Proposal |  
-|-----------|----------------|-----------------|  
-| ![Dashboard Preview]() | ![Connect Wallet]() | ![Create Proposal]() |  
-
-| Confirm Execute | Cancelled Proposals | Mobile View |  
-|-----------------|---------------------|-------------|  
-| ![Confirm Execute]() | ![Cancelled]() | ![Mobile]() |  
+[![Watch Demo](https://img.youtube.com/vi/d5PpnElKWUU/0.jpg)](http://youtube.com/watch?v=d5PpnElKWUU)
 
 ---
 
-## 🛡️ Core Features  
+## ✅ Challenge Completion Checklist
 
-✅ **Granny-Proof Security**  
-- 3-of-N approval system (trusted family members)  
-- Suspicious activity detection (AI risk scoring)  
-- One-click emergency cancellation  
+### 🔹 Core Requirements & Features
 
-✅ **Simple Governance**  
-- Propose ETH transfers  
-- Add/remove family members  
-- Change approval policies  
+1. ✅ Initialization  
+   - Contract uses constructor with address[] initialOwners and uint256 _threshold  
+   - Validates threshold range, ensures no duplicate/zero addresses  
 
-✅ **Real-Time Updates**  
-- Live proposal tracking  
-- Instant confirmation alerts  
-- Automatic threshold adjustment  
+2. ✅ Transaction Proposal  
+   - Only registered owners can propose  
+   - Stores proposal details with `to`, `value`, `data`  
+   - Proposer auto-confirms their own proposal  
+   - Emits ProposalCreated event  
+
+3. ✅ Transaction Confirmation  
+   - Only owners can confirm  
+   - Proposal must be active & not yet confirmed by caller  
+   - Emits ConfirmationAdded event  
+
+4. ✅ Transaction Execution  
+   - Requires M-of-N confirmations  
+   - Executes `to.call{value: val}(data)`  
+   - Emits TransactionExecuted event  
+
+5. ✅ View Functions  
+   - getOwners()  
+   - getThreshold()  
+   - getProposal(uint256)  
+   - isConfirmed(uint256, address)  
+   - (confirmation count is included in getProposal return struct)
+
+---
+
+### ✨ Bonus Features & AI Integration
+
+1. ✅ Owner Management via Governance  
+   - addOwner(address) & removeOwner(address)  
+   - Called only via proposals and on-chain execution flow  
+   - No direct access from external callers  
+
+2. ✅ Proposal Revocation / Cancellation  
+   - Proposer can cancel instantly  
+   - Other owners can cancel via M-of-N confirmations  
+
+3. ✅ AI-Powered Transaction Risk Assessment  
+   - `uint8 aiRiskScore` added to Proposal struct  
+   - submitTransactionRiskScore(uint256 id, uint8 score) callable by only aiOracle  
+   - If risk score ≥ 5, requires (threshold + 2) confirmations to execute  
+
+---
+
+### 🧪 Unit Testing & Evaluation Readiness
+
+- ✅ Written and passing unit tests using Hardhat
+- ✅ Tests cover: proposal creation, confirmation, execution, high-risk enforcement, AI submission
+- ✅ Contract follows gas-efficient patterns and proper access modifiers
+
+---
+
+🏁 All challenge requirements met and verified on-chain.
+
+---
+
+## 👵 Granny-Approved Features
+
+**Foolproof Security**
+- No single point of failure
+- Clear confirmation requirements
+- Visual risk indicators
+
+**Simple Workflow**
+1. Connect wallet
+2. Nominate yourself (if new)
+3. Create proposals
+4. Confirm others' proposals
+5. Execute when ready
+
+**Transparent Tracking**
+- Live proposal status
+- Owner confirmation counts
+- Execution history
 
 ---
 
@@ -66,32 +125,13 @@ Secure multi-signature wallet dApp built for granny-friendly on-chain governance
 
 ---
 
-## 🏗️ Architecture  
-
-**Smart Contract**  
-- Solidity 0.8.20  
-- Multi-sig logic with AI integration hooks  
-- Gas-optimized operations  
-
-**Frontend**  
-- Next.js 14 App Router  
-- Tailwind CSS + Shadcn UI  
-- WalletConnect integration  
-
-**AI Integration**  
-- Risk scoring system  
-- Threshold auto-adjustment  
-- Oracle-ready design  
-
----
-
 ## Team CryptoVenture Innovators
 
 | Role | Member | Contribution |  
 |------|--------|--------------|  
 | **Team Lead** | A Harsha Kumar | Smart Contracts & Web3 |  
-| **UI Wizard** | Harisankar R Nair | Frontend Development |  
-| **Safety Expert** | Reeve C Jack | Proposal Logic |  
+| **UI Development** | Harisankar R Nair | Frontend Development |  
+| **Solutions Expert** | Reeve C Jack | Proposal Logic |  
 | **UX Translator** | Duane | Granny-Friendly Design |  
 
 ---
