@@ -1,6 +1,7 @@
+// components/CreateProposal.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import toast from 'react-hot-toast'
 import { useWallet } from './WalletContext'
@@ -15,7 +16,8 @@ enum ActionType {
 }
 
 export default function CreateProposal() {
-  const { signer } = useWallet()
+  const [showDemo, setShowDemo] = useState(false)
+  const { signer, address } = useWallet()
   const [action, setAction] = useState<ActionType>(ActionType.Transaction)
   const [to, setTo] = useState('')
   const [value, setValue] = useState('')
@@ -23,11 +25,28 @@ export default function CreateProposal() {
   const [manageAddr, setManageAddr] = useState('')
   const [newThreshold, setNewThreshold] = useState('')
   const [loading, setLoading] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
+
+  useEffect(() => {
+    const checkOwnerStatus = async () => {
+      if (!address) return
+      try {
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, signer || undefined)
+        const ownerStatus = await contract.isOwner(address)
+        setIsOwner(ownerStatus)
+      } catch (err) {
+        console.error("Error checking owner status:", err)
+      }
+    }
+    checkOwnerStatus()
+  }, [address, signer])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!signer) {
-      toast.error('Please connect your wallet.', {
+    
+    // Block submissions in demo mode
+    if (!isOwner && showDemo) {
+      toast.error('Demo mode - submissions disabled', {
         style: {
           background: '#1A1A1A',
           color: '#FFFFFF',
@@ -36,6 +55,8 @@ export default function CreateProposal() {
       })
       return
     }
+
+    if (!isOwner) return // Double check
 
     const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, signer)
     const iface = new ethers.Interface(contractABI.abi)
@@ -91,6 +112,7 @@ export default function CreateProposal() {
         }
       })
       window.dispatchEvent(new Event('proposalCreated'))
+      // Reset form
       setTo('')
       setValue('')
       setData('')
@@ -110,9 +132,29 @@ export default function CreateProposal() {
     }
   }
 
+  const isDemoMode = !isOwner && showDemo
+
   return (
-    <div className="card">
-      <h2 className="text-xl font-semibold text-white mb-4">Create New Proposal</h2>
+    <div className={`card relative ${!isOwner && !showDemo ? 'opacity-80' : ''}`}>
+      {!isOwner && !showDemo && (
+        <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center z-10">
+          <div className="text-center p-4 bg-[#1A1A1A] rounded-lg border border-[#FF4320]/30">
+            <h3 className="text-lg font-bold text-[#FF4320] mb-2">Owner Access Required</h3>
+            <p className="text-gray-300 mb-4">You must be an owner to create proposals</p>
+            <button
+              onClick={() => setShowDemo(true)}
+              className="btn-secondary text-sm px-4 py-2"
+            >
+              View Demo Functionality
+            </button>
+          </div>
+        </div>
+      )}
+
+      <h2 className="text-xl font-semibold text-white mb-4">
+        {isDemoMode ? 'Demo Mode - ' : ''}Create New Proposal
+      </h2>
+      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-400 mb-1">Action</label>
@@ -120,6 +162,7 @@ export default function CreateProposal() {
             value={action}
             onChange={(e) => setAction(e.target.value as ActionType)}
             className="input"
+            disabled={!isOwner && !isDemoMode}
           >
             {Object.values(ActionType).map((a) => (
               <option key={a} value={a}>{a}</option>
@@ -138,6 +181,7 @@ export default function CreateProposal() {
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
                 required
+                disabled={!isOwner && !isDemoMode}
               />
             </div>
             <div>
@@ -149,6 +193,7 @@ export default function CreateProposal() {
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 required
+                disabled={!isOwner && !isDemoMode}
               />
             </div>
             <div>
@@ -159,6 +204,7 @@ export default function CreateProposal() {
                 className="input"
                 value={data}
                 onChange={(e) => setData(e.target.value)}
+                disabled={!isOwner && !isDemoMode}
               />
             </div>
           </>
@@ -176,6 +222,7 @@ export default function CreateProposal() {
               value={manageAddr}
               onChange={(e) => setManageAddr(e.target.value)}
               required
+              disabled={!isOwner && !isDemoMode}
             />
           </div>
         )}
@@ -191,14 +238,17 @@ export default function CreateProposal() {
               value={newThreshold}
               onChange={(e) => setNewThreshold(e.target.value)}
               required
+              disabled={!isOwner && !isDemoMode}
             />
           </div>
         )}
 
         <button
           type="submit"
-          disabled={loading}
-          className={`btn-primary w-full py-3 flex items-center justify-center gap-2 ${loading ? 'opacity-70' : 'hover:shadow-[#FF4320]/30'}`}
+          disabled={loading || (!isOwner && !isDemoMode)}
+          className={`btn-primary w-full py-3 flex items-center justify-center gap-2 ${
+            loading ? 'opacity-70' : 'hover:shadow-[#FF4320]/30'
+          } ${!isOwner && !isDemoMode ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {loading ? (
             <span className="flex items-center justify-center">
@@ -210,7 +260,7 @@ export default function CreateProposal() {
             </span>
           ) : (
             <>
-              Submit Proposal
+              {isDemoMode ? 'Try Demo Submission' : 'Submit Proposal'}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>

@@ -1,3 +1,4 @@
+// components/WalletContext.tsx
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
@@ -34,7 +35,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const targetChain = DEFAULT_CHAIN
   const isCorrectChain = chainId === targetChain.id
 
-  // Force refresh the page when chain or account changes
   const handleChainOrAccountChange = () => {
     window.location.reload()
   }
@@ -56,7 +56,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: `0x${targetChain.id.toString(16)}` }],
       })
-      // DON'T navigate automatically - let the reload handler take care of it
     } catch (switchError: any) {
       if (switchError.code === 4902) {
         try {
@@ -68,7 +67,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
                 chainName: targetChain.name,
                 nativeCurrency: {
                   name: 'ETH',
-                  symbol: 'ETH',
+                  symbol: 'ETH', 
                   decimals: 18,
                 },
                 rpcUrls: [targetChain.rpcUrl],
@@ -111,12 +110,10 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     setChainId(chainId)
     
     try {
-      const chainName = await window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [{ chainId: chainIdHex }]
-      }).then(() => null, () => null) || `Chain ${chainId}`
-      setChainName(chainName)
-    } catch {
+      const network = await provider.getNetwork()
+      setChainName(network.name)
+    } catch (err) {
+      console.error("Error getting network name:", err)
       setChainName(`Chain ${chainId}`)
     }
 

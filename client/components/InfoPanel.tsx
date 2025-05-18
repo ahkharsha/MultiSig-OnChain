@@ -106,7 +106,6 @@ export default function InfoPanel() {
 
   return (
     <div className="card space-y-4">
-      {/* Moved NominateSelf to the top */}
       {address && !owners.includes(address) && (
         <div className="pb-4">
           <NominateSelf />

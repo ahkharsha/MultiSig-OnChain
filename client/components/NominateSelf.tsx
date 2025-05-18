@@ -6,12 +6,13 @@ import toast from 'react-hot-toast'
 import { useWallet } from './WalletContext'
 import contractABI from '../abis/MultiSigWallet.json'
 import { CONTRACT_ADDRESS } from '../constants/contract'
-import { FiUserPlus, FiArrowRight } from 'react-icons/fi'
+import { FiUserPlus, FiArrowRight, FiAlertTriangle } from 'react-icons/fi'
 
 export default function NominateSelf() {
   const { signer, address } = useWallet()
   const [loading, setLoading] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
+  const [isPulsing, setIsPulsing] = useState(true)
 
   useEffect(() => {
     const checkOwnerStatus = async () => {
@@ -27,6 +28,10 @@ export default function NominateSelf() {
     }
 
     checkOwnerStatus()
+    
+    // Pulsing animation for 5 seconds
+    const timer = setTimeout(() => setIsPulsing(false), 5000)
+    return () => clearTimeout(timer)
   }, [address, signer])
 
   const handleNominate = async () => {
@@ -71,7 +76,13 @@ export default function NominateSelf() {
 
   return (
     <div className="bg-gradient-to-r from-[#FF4320]/10 to-[#FF914D]/10 border-2 border-[#FF4320]/30 p-6 rounded-xl shadow-lg relative overflow-hidden">
-      {/* Decorative elements */}
+      {/* Updated attention-grabbing element position */}
+      <div className={`absolute top-2 right-2 w-6 h-6 bg-[#FF4320] rounded-full flex items-center justify-center text-white ${
+        isPulsing ? 'animate-ping' : ''
+      }`}>
+        <FiAlertTriangle className="text-xs" />
+      </div>
+      
       <div className="absolute -top-2 -right-2 w-16 h-16 bg-[#FF4320]/10 rounded-full"></div>
       <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-[#FF914D]/10 rounded-full"></div>
       
@@ -81,27 +92,29 @@ export default function NominateSelf() {
             <FiUserPlus className="text-2xl text-[#FF4320]" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Become an Owner</h3>
-            <p className="text-[#FF4320]">
-              Nominate yourself to join the multisig wallet!
+            <h3 className="text-lg font-bold text-white">Become an Owner!</h3>
+            <p className="text-[#FF4320] font-medium">
+              Join the multisig wallet now!
             </p>
           </div>
         </div>
 
         <div className="space-y-3">
           <p className="text-sm text-gray-300">
-            As a new user, you need to be approved by existing owners to participate in governance.
+            You need to be approved by existing owners to participate in governance.
           </p>
           <button
             onClick={handleNominate}
             disabled={loading}
-            className={`btn-primary w-full flex items-center justify-center gap-2 group ${loading ? 'opacity-70' : ''}`}
+            className={`btn-primary w-full flex items-center justify-center gap-2 group ${
+              loading ? 'opacity-70' : 'hover:scale-[1.02] transform transition-transform'
+            }`}
           >
             {loading ? (
               'Submitting...'
             ) : (
               <>
-                Nominate Yourself
+                <span className="font-bold">Nominate Yourself Now</span>
                 <FiArrowRight className="transition-transform group-hover:translate-x-1" />
               </>
             )}

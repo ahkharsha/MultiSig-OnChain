@@ -1,3 +1,4 @@
+// components/Header.tsx
 'use client'
 
 import { useWallet } from './WalletContext'
@@ -5,7 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export default function Header() {
-  const { address, isCorrectChain, targetChain, chainName } = useWallet()
+  const { address, isCorrectChain, chainName } = useWallet()
   const pathname = usePathname()
 
   const navLinks = [
@@ -44,13 +45,13 @@ export default function Header() {
             </nav>
           )}
         </div>
-        
+
         {address && (
           <div className="flex items-center space-x-4">
             <div className="hidden sm:flex items-center space-x-2">
               <div className={`px-3 py-1.5 rounded-lg text-sm ${
-                isCorrectChain 
-                  ? 'bg-green-500/10 text-green-400' 
+                isCorrectChain
+                  ? 'bg-green-500/10 text-green-400'
                   : 'bg-red-500/10 text-red-400'
               }`}>
                 <span className="text-gray-400">Network: </span>
@@ -59,7 +60,7 @@ export default function Header() {
                 </span>
               </div>
             </div>
-            
+
             <div className="px-3 py-1.5 bg-[#2A2A2A] rounded-lg text-sm">
               <span className="text-gray-400">Connected: </span>
               <span className="font-mono text-white">
@@ -75,13 +76,13 @@ export default function Header() {
         <div className="md:hidden border-t border-[#2A2A2A]">
           <div className="flex justify-between items-center px-4 py-2">
             <div className={`px-2 py-1 rounded text-xs ${
-              isCorrectChain 
-                ? 'bg-green-500/10 text-green-400' 
+              isCorrectChain
+                ? 'bg-green-500/10 text-green-400'
                 : 'bg-red-500/10 text-red-400'
             }`}>
               Network: {chainName || 'Loading...'}
             </div>
-            
+
             {isCorrectChain && (
               <nav className="flex space-x-4">
                 {navLinks.map((link) => (
