@@ -12,18 +12,21 @@ export default function HomePage() {
   return (
     <div className="flex flex-col h-full">
       <main className="flex-1 overflow-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1 space-y-6">
+        <div className="max-w-full px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column - InfoPanel */}
+            <div className="md:col-span-1">
               <InfoPanel />
-              <div id="create">
-                <CreateProposal />
-              </div>
             </div>
-            <div className="lg:col-span-2">
-              <div id="proposals">
-                <ProposalList />
-              </div>
+            
+            {/* Right Column - CreateProposal */}
+            <div id="create" className="md:col-span-1">
+              <CreateProposal />
+            </div>
+            
+            {/* Full Width Proposal List */}
+            <div id="proposals" className="md:col-span-2">
+              <ProposalList />
             </div>
           </div>
         </div>

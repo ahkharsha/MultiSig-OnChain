@@ -64,8 +64,8 @@ export default function ProposalList() {
         const confirmed = await contract.isConfirmed(i, address)
         const [proposer, to, value, data, confs, exec, canc, risk] = raw
 
-        const isNomination = to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() && 
-                            data.startsWith(addOwnerSig)
+        const isNomination = to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase() &&
+          data.startsWith(addOwnerSig)
 
         all.push({
           id: i,
@@ -79,8 +79,8 @@ export default function ProposalList() {
           aiRiskScore: risk,
           confirmed,
           isNomination,
-          requiredConfirmations: isNomination 
-            ? thresholdValue 
+          requiredConfirmations: isNomination
+            ? thresholdValue
             : risk >= 5 ? thresholdValue + 2 : thresholdValue
         })
       }
@@ -108,7 +108,7 @@ export default function ProposalList() {
     if (!provider) return
 
     const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI.abi, provider)
-    
+
     const events = [
       'ProposalCreated',
       'ConfirmationAdded',
@@ -267,11 +267,10 @@ export default function ProposalList() {
               Proposed by: <span className="font-mono text-white">{shortenAddress(p.proposer)}</span>
             </p>
           </div>
-          
-          <span className={`text-xs px-2 py-1 rounded-full ${
-            p.cancelled ? 'bg-red-500/10 text-red-400' : 
-            p.executed ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
-          }`}>
+
+          <span className={`text-xs px-2 py-1 rounded-full ${p.cancelled ? 'bg-red-500/10 text-red-400' :
+              p.executed ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'
+            }`}>
             {p.cancelled ? 'Cancelled' : p.executed ? 'Executed' : 'Pending'}
           </span>
         </div>
@@ -280,7 +279,7 @@ export default function ProposalList() {
           {p.isNomination ? (
             <p className="text-sm">
               <span className="text-gray-400">Nominee:</span>{' '}
-              <span className="font-mono text-white">{shortenAddress('0x'+p.data.slice(-40))}</span>
+              <span className="font-mono text-white">{shortenAddress('0x' + p.data.slice(-40))}</span>
             </p>
           ) : (
             <>
@@ -305,10 +304,10 @@ export default function ProposalList() {
               </span>
             </div>
             <div className="w-full bg-[#2A2A2A] rounded-full h-2">
-              <div 
-                className="bg-[#FF4320] h-2 rounded-full" 
-                style={{ 
-                  width: `${Math.min(100, (p.confirmations / p.requiredConfirmations) * 100)}%` 
+              <div
+                className="bg-[#FF4320] h-2 rounded-full"
+                style={{
+                  width: `${Math.min(100, (p.confirmations / p.requiredConfirmations) * 100)}%`
                 }}
               />
             </div>
@@ -317,7 +316,7 @@ export default function ProposalList() {
 
         <div className="mt-4 flex gap-2">
           {!p.confirmed && !p.executed && !p.cancelled && (
-            <button 
+            <button
               className="btn-secondary text-sm px-3 py-1.5"
               onClick={() => doConfirm(p.id)}
             >
@@ -325,8 +324,8 @@ export default function ProposalList() {
             </button>
           )}
           {!p.executed && !p.cancelled && (
-            <button 
-              className="btn-primary text-sm px-3 py-1.5 disabled:opacity-50"
+            <button
+              className="text-sm px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50"
               onClick={() => doExecute(p)}
               disabled={p.confirmations < p.requiredConfirmations}
             >
@@ -334,7 +333,7 @@ export default function ProposalList() {
             </button>
           )}
           {!p.executed && (
-            <button 
+            <button
               className="text-sm px-3 py-1.5 border border-gray-700 rounded-lg hover:bg-[#2A2A2A] transition"
               onClick={() => doCancel(p.id)}
             >
@@ -349,7 +348,7 @@ export default function ProposalList() {
   const renderProposalSection = (title: string, proposals: Proposal[], section: keyof typeof expandedSections) => {
     return (
       <div key={section} className="mb-6">
-        <div 
+        <div
           className="flex justify-between items-center cursor-pointer p-3 bg-[#2A2A2A] rounded-lg hover:bg-[#3A3A3A] transition"
           onClick={() => toggleSection(section)}
         >
@@ -365,7 +364,7 @@ export default function ProposalList() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
-        
+
         {expandedSections[section] && (
           <div className="mt-2 grid gap-4">
             {proposals.length === 0 ? (

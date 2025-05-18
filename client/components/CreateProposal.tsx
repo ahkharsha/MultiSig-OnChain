@@ -131,9 +131,9 @@ export default function CreateProposal() {
           <>
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">Recipient Address</label>
-              <input 
-                type="text" 
-                placeholder="0x..." 
+              <input
+                type="text"
+                placeholder="0x..."
                 className="input"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
@@ -142,9 +142,9 @@ export default function CreateProposal() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">ETH Value</label>
-              <input 
-                type="text" 
-                placeholder="0.1" 
+              <input
+                type="text"
+                placeholder="0.1"
                 className="input"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
@@ -153,9 +153,9 @@ export default function CreateProposal() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">Call Data (optional)</label>
-              <input 
-                type="text" 
-                placeholder="0x..." 
+              <input
+                type="text"
+                placeholder="0x..."
                 className="input"
                 value={data}
                 onChange={(e) => setData(e.target.value)}
@@ -198,7 +198,7 @@ export default function CreateProposal() {
         <button
           type="submit"
           disabled={loading}
-          className={`btn-primary w-full py-3 ${loading ? 'opacity-70' : ''}`}
+          className={`btn-primary w-full py-3 flex items-center justify-center gap-2 ${loading ? 'opacity-70' : 'hover:shadow-[#FF4320]/30'}`}
         >
           {loading ? (
             <span className="flex items-center justify-center">
@@ -209,7 +209,12 @@ export default function CreateProposal() {
               Processing...
             </span>
           ) : (
-            'Submit Proposal'
+            <>
+              Submit Proposal
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </>
           )}
         </button>
       </form>
