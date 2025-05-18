@@ -128,11 +128,13 @@ export default function InfoPanel() {
             <li 
               key={owner} 
               className={`font-mono text-sm p-3 rounded-lg break-all ${
-                owner === address ? 'bg-[#FF4320]/10 border border-[#FF4320]/20' : 'bg-[#2A2A2A]'
+                owner.toLowerCase() === address?.toLowerCase() 
+                  ? 'bg-[#FF4320]/10 border border-[#FF4320]/20' 
+                  : 'bg-[#2A2A2A]'
               }`}
             >
               {owner}
-              {owner === address && (
+              {owner.toLowerCase() === address?.toLowerCase() && (
                 <span className="ml-2 text-xs bg-[#FF4320] text-black px-2 py-0.5 rounded-full">
                   You
                 </span>
