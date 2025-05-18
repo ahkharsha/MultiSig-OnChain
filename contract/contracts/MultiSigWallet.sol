@@ -128,6 +128,11 @@ contract MultiSigWallet {
         return proposals.length;
     }
 
+    function getConfirmationCount(uint256 proposalId) external view returns (uint256) {
+        require(proposalId < proposals.length, "Invalid proposal ID");
+        return proposals[proposalId].confirmations;
+    }
+
     function getProposal(
         uint256 id
     )
