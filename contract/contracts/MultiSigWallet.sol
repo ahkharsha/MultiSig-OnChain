@@ -11,7 +11,11 @@ contract MultiSigWallet {
         bytes data
     );
     event ConfirmationAdded(uint256 indexed id, address owner);
-    event TransactionExecuted(uint256 indexed id, address executor, bool success);
+    event TransactionExecuted(
+        uint256 indexed id,
+        address executor,
+        bool success
+    );
     event ProposalCancelled(uint256 indexed id);
     event RiskScoreSubmitted(uint256 indexed id, uint8 score);
     event OwnerAdded(address owner);
@@ -74,25 +78,31 @@ contract MultiSigWallet {
     }
 
     modifier onlySelf() {
-        require(msg.sender == address(this), "Caller is not the contract itself");
+        require(
+            msg.sender == address(this),
+            "Caller is not the contract itself"
+        );
         _;
     }
 
     /* ===== Constructor ===== */
     constructor(
-        address[] calldata initialOwners,
+        address[] memory initialOwners, // Changed from calldata to memory
         uint256 _threshold,
         address oracle
     ) {
         require(_threshold > 0, "Threshold must be > 0");
-        require(_threshold <= initialOwners.length, "Threshold exceeds owner count");
+        require(
+            _threshold <= initialOwners.length,
+            "Threshold exceeds owner count"
+        );
         require(oracle != address(0), "Invalid oracle address");
 
         for (uint i = 0; i < initialOwners.length; i++) {
             address owner = initialOwners[i];
             require(owner != address(0), "Zero address owner");
             require(!isOwner[owner], "Duplicate owner detected");
-            
+
             isOwner[owner] = true;
             owners.push(owner);
         }
@@ -102,6 +112,7 @@ contract MultiSigWallet {
     }
 
     receive() external payable {}
+
     fallback() external payable {}
 
     /* ===== View Functions ===== */
@@ -117,7 +128,9 @@ contract MultiSigWallet {
         return proposals.length;
     }
 
-    function getProposal(uint256 id)
+    function getProposal(
+        uint256 id
+    )
         external
         view
         returns (
@@ -146,7 +159,10 @@ contract MultiSigWallet {
         );
     }
 
-    function isConfirmed(uint256 id, address owner) external view returns (bool) {
+    function isConfirmed(
+        uint256 id,
+        address owner
+    ) external view returns (bool) {
         return confirmed[id][owner];
     }
 
@@ -181,7 +197,10 @@ contract MultiSigWallet {
     function nominateOwner(address nominee) external returns (uint256) {
         require(nominee != address(0), "Zero nominee");
 
-        bytes memory callData = abi.encodeWithSignature("addOwner(address)", nominee);
+        bytes memory callData = abi.encodeWithSignature(
+            "addOwner(address)",
+            nominee
+        );
 
         proposals.push(
             Proposal({
@@ -203,13 +222,9 @@ contract MultiSigWallet {
     }
 
     /* ===== Confirmation ===== */
-    function confirm(uint256 id)
-        external
-        onlyOwner
-        exists(id)
-        notExecuted(id)
-        notCancelled(id)
-    {
+    function confirm(
+        uint256 id
+    ) external onlyOwner exists(id) notExecuted(id) notCancelled(id) {
         require(!confirmed[id][msg.sender], "Already confirmed");
         _confirm(id);
         emit ConfirmationAdded(id, msg.sender);
@@ -221,7 +236,9 @@ contract MultiSigWallet {
     }
 
     /* ===== Execution ===== */
-    function execute(uint256 id)
+    function execute(
+        uint256 id
+    )
         external
         onlyOwner
         nonReentrant
@@ -230,10 +247,10 @@ contract MultiSigWallet {
         notCancelled(id)
     {
         Proposal storage p = proposals[id];
-        
+
         // Ensure minimum time has passed (prevents front-running)
         require(block.timestamp >= p.createdAt + 30 seconds, "Cooldown period");
-        
+
         uint256 required = p.aiRiskScore >= 5 ? threshold + 2 : threshold;
         require(p.confirmations >= required, "Insufficient confirmations");
 
@@ -245,26 +262,25 @@ contract MultiSigWallet {
     }
 
     /* ===== Cancellation ===== */
-    function cancel(uint256 id)
-        external
-        exists(id)
-        notExecuted(id)
-        notCancelled(id)
-    {
+    function cancel(
+        uint256 id
+    ) external exists(id) notExecuted(id) notCancelled(id) {
         Proposal storage p = proposals[id];
         if (msg.sender != p.proposer) {
-            require(p.confirmations >= threshold, "Threshold not met for other-owner cancel");
+            require(
+                p.confirmations >= threshold,
+                "Threshold not met for other-owner cancel"
+            );
         }
         p.cancelled = true;
         emit ProposalCancelled(id);
     }
 
     /* ===== AI Risk Score Submission ===== */
-    function submitRiskScore(uint256 id, uint8 score)
-        external
-        onlyAIOracle
-        exists(id)
-    {
+    function submitRiskScore(
+        uint256 id,
+        uint8 score
+    ) external onlyAIOracle exists(id) {
         require(score <= 10, "Score too high");
         proposals[id].aiRiskScore = score;
         emit RiskScoreSubmitted(id, score);
@@ -299,7 +315,10 @@ contract MultiSigWallet {
     }
 
     function changeThreshold(uint256 newThreshold) external onlySelf {
-        require(newThreshold > 0 && newThreshold <= owners.length, "Bad threshold");
+        require(
+            newThreshold > 0 && newThreshold <= owners.length,
+            "Bad threshold"
+        );
         threshold = newThreshold;
         emit ThresholdChanged(newThreshold);
     }
